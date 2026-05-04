@@ -1,7 +1,8 @@
 <script>
 const TEXT = {
   title: 'Список дел',
-  placeholder: 'Добавьте задачу',
+  placeholderInput: 'Добавьте задачу',
+  placeholderTextarea: "Подробное описание",
   btn: 'Добавить',
 }
 
@@ -9,6 +10,7 @@ export default {
   data() {
     return {
       taskName: '',
+      taskText: '',
       tasks: [],
       TEXT,
     };
@@ -16,7 +18,7 @@ export default {
 
   mounted() {
     this.loadTasks();
-    this.focus();
+    this.focusInput();
   },
 
   watch: {
@@ -36,49 +38,152 @@ export default {
       localStorage.setItem('tasks', JSON.stringify(this.tasks));
     },
 
-    addTask() {
+    addTask() {      
       if(this.taskName.trim().length) {
         this.tasks.push({
-          id: Date.now(),
+          id: this.generateId(),
           title: this.taskName,
+          text: this.taskText,
           done: false,
-        })
+          date: Date.now(),
+        });
         
         this.taskName = "";
+        this.taskText = "";
       };
 
-      this.focus();
+      this.focusInput();
     },
 
     removeTask(id) {
       this.tasks = this.tasks.filter(task => task.id !== id);
     },
 
-    focus() {
+    focusInput() {
       this.$nextTick(() => {
         this.$refs?.taskInput.focus();
       });
+    },
+
+    focusTextarea() {
+      this.$refs?.taskTextarea.focus();
+    },
+
+    formatDate(timestamp) {
+      const taskDate = new Date(timestamp);
+
+      // Красивый вывод даты создания
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const taskDay = new Date(taskDate.getFullYear(), taskDate.getMonth(), taskDate.getDate());
+      const differenceDays = Math.floor((today - taskDay) / (1000 * 60 * 60 *24));
+      if (taskDate.toDateString() === today.toDateString()) {
+        return "сегодня";
+      };
+      if((taskDate.toDateString() === yesterday.toDateString())) {
+        return "вчера";
+      };      
+      if (differenceDays < 5) {
+        return `${differenceDays} дня назад`;
+      };
+      if (differenceDays < 8) {
+        return `${differenceDays} дней назад`;
+      };
+      
+      return taskDate.toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+    },
+
+    generateId() {
+      return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     },
   },
 };
 </script>
 
 <template>
-  <section :class="[$style.toDo, $style.container]">
-    <h2>{{ TEXT.title }}</h2>
+  <section
+    :class="[
+      $style.toDo,
+      $style.container
+    ]"
+  >
+    <h2>
+      {{ TEXT.title }}
+    </h2>
 
-    <form @submit.prevent="addTask">
-      <input v-model="taskName" type="text" ref="taskInput" :placeholder="TEXT.placeholder">
-      <button>{{ TEXT.btn }}</button>
+    <form
+      :class="$style.form"
+      @submit.prevent="addTask"
+    >
+      <input
+        :class="$style.input"
+        v-model="taskName"
+        type="text"
+        ref="taskInput"
+        :placeholder="TEXT.placeholderInput"
+        @keydown.enter.prevent="taskName.trim() ? focusTextarea() : null"
+        />
+        
+        <textarea
+          :class="$style.textarea"
+          ref="taskTextarea"
+          v-model="taskText"
+          :placeholder="TEXT.placeholderTextarea"
+          @keydown.enter="!$event.shiftKey && addTask()"
+        />
+
+      <input
+        type="submit"
+        :class="$style.btn"
+        :value="TEXT.btn"
+      />
     </form>
 
-    <ul :class="$style.list" v-if="tasks.length">
-      <li :class="$style.item" v-for="task in tasks" :key="task.id">
-        <input :class="$style.checkbox" type="checkbox" :id="`_${task.id}`" v-model="task.done">
-        <label :class="$style.text" :for="`_${task.id}`">
-          <span>{{ task.title }}</span>
+    <ul
+      :class="$style.list"
+      v-if="tasks.length"
+    >
+      <li
+        :class="$style.item"
+        v-for="task in tasks"
+        :key="task.id"
+      >
+        <input
+          :class="$style.checkbox"
+          type="checkbox"
+          :id="`_${task.id}`"
+          v-model="task.done"
+        >
+
+        <label
+          :class="$style.text"
+          :for="`_${task.id}`"
+        >
+          <span :class="$style.textTitle">
+            {{ task.title }}
+          </span>
+
+          <p :class="$style.textDescription">
+            {{ task.text }}
+          </p>
+
+          <small :class="$style.textDate">
+            Создана {{ formatDate(task?.date) }}
+          </small>
         </label>
-        <div :class="$style.remove" @click="removeTask(task.id)">X</div>
+
+        <div
+          :class="$style.remove"
+          @click="removeTask(task.id)"
+        >
+          X
+        </div>
       </li>
     </ul>
   </section>
@@ -92,7 +197,20 @@ export default {
   max-width: 600px;
   margin: auto;
 }
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.input {}
+.textarea {
+  resize: none;
+  height: 100px;
+}
+.btn {}
 .list {
+  border-top: 1px solid;
+  padding-top: 16px;
   padding-left: 0;
 }
 .item {
@@ -105,12 +223,24 @@ export default {
 .checkbox {
   display: none;
 }
-.checkbox:checked + .text {
-  color:gray;
+.checkbox:checked + .text .textTitle {
   text-decoration: line-through;
+}
+.checkbox:checked + .text .textDescription,
+.checkbox:checked + .text .textDate {
+  color:gray;
 }
 .text {
   flex-grow: 1;
+}
+.textTitle {
+  display: flex;
+}
+.textDescription {
+  display: flex;
+}
+.textDate {
+  display: flex;
 }
 .remove {
   align-self: center;
