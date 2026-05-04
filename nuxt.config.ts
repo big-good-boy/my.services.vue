@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: [
-    '@csstools/normalize.css'
+    '@csstools/normalize.css',
+    '~/assets/global.css',
   ]
 })
