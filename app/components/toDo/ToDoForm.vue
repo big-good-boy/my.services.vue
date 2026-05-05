@@ -10,6 +10,7 @@ export default defineComponent ({
 		return {
 			localTaskName: '' as string,
 			localTaskText: '' as string,
+			localPriority: false as boolean,
 			TEXT,
 		};
 	},
@@ -20,10 +21,12 @@ export default defineComponent ({
 				this.$emit('add', {
 					title: this.localTaskName,
 					text: this.localTaskText,
+					priority: this.localPriority,
 				});
 				
 				this.localTaskName = "";
 				this.localTaskText = "";
+				this.localPriority = false;
 			};
 
 			this.focusInput();
@@ -67,7 +70,7 @@ export default defineComponent ({
 			:placeholder="TEXT.placeholderInput"
 			@keydown.enter.prevent="handleInputEnter"
 		/>
-		
+
 		<textarea
 			:class="$style.textarea"
 			ref="taskTextarea"
@@ -75,6 +78,32 @@ export default defineComponent ({
 			:placeholder="TEXT.placeholderTextarea"
 			@keydown.enter="handleTextareaEnter"
 		/>
+
+		<div :class="$style.options">
+			<label :class="$style.priority">
+				<input
+					:class="$style.priorityCheckbox"
+					type="checkbox"
+					v-model="localPriority"
+				/>
+				<div :class="[
+					$style.priorityIcon,
+					localPriority && $style.priorityIconChecked
+				]">
+					<Icon
+						:name="
+							localPriority
+							? 'material-symbols:radio-button-checked'
+							: 'material-symbols:radio-button-unchecked'
+						"
+						size="20"
+					/>
+				</div>
+				<span :class="$style.priorityLabel">
+					{{ TEXT.priorityLabel }}
+				</span>
+			</label>
+		</div>
 
 		<input
 			type="submit"
@@ -107,6 +136,30 @@ export default defineComponent ({
 	font-size: 16px;
 	border-radius: 4px;
 	outline-color: var(--blue);
+}
+.options {
+}
+.priority {
+	display: flex;
+	align-items: flex-end;
+	gap: 4px;
+}
+.priorityIcon {
+	line-height: 0;
+	color: var(--blue);
+	width: 20px;
+	height: 20px;
+}
+.priorityIconChecked {
+	color: var(--red);
+}
+.priorityCheckbox {
+	display: none;
+}
+.priorityLabel {
+	position: relative;
+	top: 1px;
+	color: var(--gray);
 }
 .btn {
 	padding: 8px;

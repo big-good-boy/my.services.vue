@@ -4,4 +4,5 @@ export const TEXT = {
   placeholderTextarea: "Подробное описание",
   btn: 'Добавить',
   dateLabel: 'Создана ',
+  priorityLabel: 'Важная ',
 } as const;

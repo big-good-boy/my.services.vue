@@ -59,7 +59,10 @@ export default defineComponent ({
 </script>
 
 <template>
-	<li :class="$style.item">
+	<li :class="[
+			$style.item,
+			task.priority && $style.itemPriority,
+	]">
 		<input
 			:class="$style.checkbox"
 			type="checkbox"
@@ -101,6 +104,9 @@ export default defineComponent ({
   padding: 4px 8px;
   border: 1px solid var(--blue);
   border-radius: 4px;
+}
+.itemPriority {
+	border: 1px solid var(--red);
 }
 .checkbox {
   display: none;

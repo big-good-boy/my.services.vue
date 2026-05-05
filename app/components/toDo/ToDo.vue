@@ -2,14 +2,14 @@
 import type { Task } from "~/interfaces/task.interfaces.js"
 import { TEXT } from '~/constants/toDo.js'
 import ToDoForm from './ToDoForm.vue';
-import ToDoTasks from './ToDoTasks.vue';
+import ToDoList from './ToDoList.vue';
 
 export default defineComponent ({
   name: 'ToDo',
 
 	components: {
 		ToDoForm,
-    ToDoTasks,
+    ToDoList,
 	},
 
   data() {
@@ -49,11 +49,12 @@ export default defineComponent ({
       localStorage.setItem('tasks', JSON.stringify(this.tasks));
     },
 
-    addTask(payload: { title: string; text: string }): void {
+    addTask(payload: { title: string; text: string; priority: boolean }): void {
 			this.tasks.push({
 				id: this.generateId(),
 				title: payload.title,
 				text: payload.text,
+        priority: payload.priority,
 				done: false,
 				date: Date.now(),
 			});
@@ -83,7 +84,7 @@ export default defineComponent ({
 
     <ToDoForm @add="addTask" />
 
-    <ToDoTasks
+    <ToDoList
       :tasks="tasks"
       @remove="removeTask"
     />

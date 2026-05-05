@@ -3,7 +3,7 @@ import type { Task } from "~/interfaces/task.interfaces.js"
 import ToDoTask from './ToDoTask.vue';
 
 export default defineComponent ({
-  name: 'ToDoTasks',
+  name: 'ToDoList',
 
 	components: {
     ToDoTask,
