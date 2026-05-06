@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { Task } from "~/interfaces/task.interfaces.js"
+import type { Task } from '~/interfaces/task.interfaces.js';
 import { TEXT } from '~/constants/toDo.js';
 
-export default defineComponent ({
+export default defineComponent({
 	name: 'ToDoTask',
 
 	props: {
@@ -12,7 +12,7 @@ export default defineComponent ({
 		},
 	},
 
-	emits: ['remove'],
+	emits: ['remove', 'edit'],
 
 	data() {
 		return {
@@ -29,21 +29,27 @@ export default defineComponent ({
 			const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 			const yesterday = new Date(today);
 			yesterday.setDate(yesterday.getDate() - 1);
-			const taskDay = new Date(taskDate.getFullYear(), taskDate.getMonth(), taskDate.getDate());
-			const differenceDays = Math.floor((today.getTime() - taskDay.getTime()) / (1000 * 60 * 60 * 24));
+			const taskDay = new Date(
+				taskDate.getFullYear(),
+				taskDate.getMonth(),
+				taskDate.getDate()
+			);
+			const differenceDays = Math.floor(
+				(today.getTime() - taskDay.getTime()) / (1000 * 60 * 60 * 24)
+			);
 			if (taskDate.toDateString() === today.toDateString()) {
-				return "сегодня";
-			};
-			if((taskDate.toDateString() === yesterday.toDateString())) {
-				return "вчера";
-			};      
+				return 'сегодня';
+			}
+			if (taskDate.toDateString() === yesterday.toDateString()) {
+				return 'вчера';
+			}
 			if (differenceDays < 5) {
 				return `${differenceDays} дня назад`;
-			};
+			}
 			if (differenceDays < 8) {
 				return `${differenceDays} дней назад`;
-			};
-			
+			}
+
 			return taskDate.toLocaleDateString('ru-RU', {
 				day: 'numeric',
 				month: 'long',
@@ -54,26 +60,30 @@ export default defineComponent ({
 		handleRemove(): void {
 			this.$emit('remove', this.task.id);
 		},
+
+		handleEdit(): void {
+			this.$emit('edit', this.task);
+		},
 	},
-})
+});
 </script>
 
 <template>
-	<li :class="[
+	<li
+		:class="[
 			$style.item,
 			task.priority && $style.itemPriority,
-	]">
+			task.done && $style.itemDone,
+		]"
+	>
 		<input
 			:class="$style.checkbox"
 			type="checkbox"
 			:id="`_${task.id}`"
 			v-model="task.done"
-		>
+		/>
 
-		<label
-			:class="$style.text"
-			:for="`_${task.id}`"
-		>
+		<label :class="$style.text" :for="`_${task.id}`">
 			<span :class="$style.textTitle">
 				{{ task.title }}
 			</span>
@@ -93,45 +103,67 @@ export default defineComponent ({
 			name="material-symbols:delete-outline"
 			size="20"
 		/>
+
+		<Icon
+			v-if="!task.done"
+			:class="$style.edit"
+			@click="handleEdit"
+			name="material-symbols:ink-pen-outline"
+			size="20"
+		/>
 	</li>
 </template>
 
 <style lang="css" module>
 .item {
 	position: relative;
-  display: flex;
-  gap: 16px;
-  padding: 4px 8px;
-  border: 1px solid var(--blue);
-  border-radius: 4px;
+	display: flex;
+	gap: 16px;
+	padding: 4px 8px;
+	border: 1px solid var(--blue);
+	border-radius: 4px;
 }
 .itemPriority {
-	border: 1px solid var(--red);
+	border-width: 2px;
+	border-color: var(--red);
+}
+.itemDone {
+	border-color: var(--gray);
 }
 .checkbox {
-  display: none;
+	display: none;
 }
 .checkbox:checked + .text .textTitle {
-  text-decoration: line-through;
+	text-decoration: line-through;
 }
 .checkbox:checked + .text .textDescription,
 .checkbox:checked + .text .textDate {
-  color: var(--gray);
+	color: var(--gray);
 }
 .text {
-  flex-grow: 1;
+	flex-grow: 1;
 }
-.textTitle {}
+.textTitle {
+}
 .textDescription {
-  white-space: pre-wrap;
+	white-space: pre-wrap;
 }
-.textDate {}
+.textDate {
+}
 .remove {
 	position: absolute;
 	align-self: flex-start;
-	top: 4px;
+	top: 8px;
 	right: 8px;
-  cursor: pointer;
+	cursor: pointer;
 	color: var(--red);
+}
+.edit {
+	position: absolute;
+	align-self: flex-start;
+	bottom: 8px;
+	right: 8px;
+	cursor: pointer;
+	color: var(--blue);
 }
 </style>

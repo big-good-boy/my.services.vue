@@ -1,10 +1,18 @@
 <script lang="ts">
 import { TEXT } from '~/constants/toDo.js';
+import type { Task } from '~/interfaces/task.interfaces.js';
 
-export default defineComponent ({
+export default defineComponent({
 	name: 'ToDoForm',
 
-	emits: ['add'],
+	props: {
+		taskToEdit: {
+			type: Object as () => Task | null,
+			default: null,
+		},
+	},
+
+	emits: ['add', 'edit', 'cancel-edit'],
 
 	data() {
 		return {
@@ -15,20 +23,53 @@ export default defineComponent ({
 		};
 	},
 
+	computed: {
+		isEditing(): boolean {
+			return this.taskToEdit !== null;
+		},
+	},
+
+	watch: {
+		taskToEdit: {
+			handler(newTask: Task | null) {
+				if (newTask) {
+					this.localTaskName = newTask.title;
+					this.localTaskText = newTask.text;
+					this.localPriority = newTask.priority;
+				}
+			},
+			immediate: true,
+		},
+	},
+
 	methods: {
-		handleSubmit(): void {      
-			if(this.localTaskName.trim().length) {
-				this.$emit('add', {
+		handleSubmit(): void {
+			if (this.localTaskName.trim().length) {
+				const payload = {
 					title: this.localTaskName,
 					text: this.localTaskText,
 					priority: this.localPriority,
-				});
-				
-				this.localTaskName = "";
-				this.localTaskText = "";
-				this.localPriority = false;
-			};
+				};
+				if (this.isEditing) {
+					this.$emit('edit', payload);
+				} else {
+					this.$emit('add', payload);
+				}
 
+				this.resetForm();
+			}
+
+			this.focusInput();
+		},
+
+		resetForm(): void {
+			this.localTaskName = '';
+			this.localTaskText = '';
+			this.localPriority = false;
+		},
+
+		cancelEdit(): void {
+			this.resetForm();
 			this.focusInput();
 		},
 
@@ -39,7 +80,7 @@ export default defineComponent ({
 		},
 
 		handleInputEnter(): void {
-			this.localTaskName.trim() ? this.focusTextarea() : null
+			this.localTaskName.trim() ? this.focusTextarea() : null;
 		},
 
 		focusTextarea(): void {
@@ -47,10 +88,10 @@ export default defineComponent ({
 		},
 
 		handleTextareaEnter(event: KeyboardEvent): void {
-			!event.shiftKey && this.handleSubmit()
+			!event.shiftKey && this.handleSubmit();
 		},
 	},
-	
+
 	mounted() {
 		this.focusInput();
 	},
@@ -59,8 +100,9 @@ export default defineComponent ({
 
 <template>
 	<form
-      :class="$style.form"
-      @submit.prevent="handleSubmit"
+		:class="$style.form"
+		@submit.prevent="handleSubmit"
+		@keydown.esc="cancelEdit"
 	>
 		<input
 			:class="$style.input"
@@ -86,15 +128,17 @@ export default defineComponent ({
 					type="checkbox"
 					v-model="localPriority"
 				/>
-				<div :class="[
-					$style.priorityIcon,
-					localPriority && $style.priorityIconChecked
-				]">
+				<div
+					:class="[
+						$style.priorityIcon,
+						localPriority && $style.priorityIconChecked,
+					]"
+				>
 					<Icon
 						:name="
 							localPriority
-							? 'material-symbols:radio-button-checked'
-							: 'material-symbols:radio-button-unchecked'
+								? 'material-symbols:radio-button-checked'
+								: 'material-symbols:radio-button-unchecked'
 						"
 						size="20"
 					/>
@@ -105,19 +149,15 @@ export default defineComponent ({
 			</label>
 		</div>
 
-		<input
-			type="submit"
-			:class="$style.btn"
-			:value="TEXT.btn"
-		/>
+		<input type="submit" :class="$style.btn" :value="TEXT.btn" />
 	</form>
 </template>
 
 <style lang="css" module>
 .form {
 	display: flex;
-  flex-direction: column;
-  gap: 16px;
+	flex-direction: column;
+	gap: 16px;
 }
 .input {
 	padding: 4px;
@@ -129,7 +169,7 @@ export default defineComponent ({
 }
 .textarea {
 	resize: none;
-  height: 100px;
+	height: 100px;
 	padding: 4px;
 	border: 1px solid var(--blue);
 	font-family: sans-serif;
@@ -138,11 +178,14 @@ export default defineComponent ({
 	outline-color: var(--blue);
 }
 .options {
+	display: flex;
+	gap: 8px;
 }
 .priority {
 	display: flex;
 	align-items: flex-end;
 	gap: 4px;
+	cursor: pointer;
 }
 .priorityIcon {
 	line-height: 0;
@@ -169,5 +212,11 @@ export default defineComponent ({
 	border-radius: 4px;
 	background-color: var(--green);
 	color: white;
+	cursor: pointer;
+	transition: var(--transition);
+}
+.btn:hover {
+	color: var(--green);
+	background-color: white;
 }
 </style>
