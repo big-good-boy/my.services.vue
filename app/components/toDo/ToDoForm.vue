@@ -19,6 +19,7 @@ export default defineComponent({
 			localTaskName: '' as string,
 			localTaskText: '' as string,
 			localPriority: false as boolean,
+			localDeadline: '' as string,
 			TEXT,
 		};
 	},
@@ -36,6 +37,7 @@ export default defineComponent({
 					this.localTaskName = newTask.title;
 					this.localTaskText = newTask.text;
 					this.localPriority = newTask.priority;
+					this.localDeadline = newTask.deadline || '';
 				}
 			},
 			immediate: true,
@@ -49,7 +51,9 @@ export default defineComponent({
 					title: this.localTaskName,
 					text: this.localTaskText,
 					priority: this.localPriority,
+					deadline: this.localDeadline || null,
 				};
+
 				if (this.isEditing) {
 					this.$emit('edit', payload);
 				} else {
@@ -66,9 +70,11 @@ export default defineComponent({
 			this.localTaskName = '';
 			this.localTaskText = '';
 			this.localPriority = false;
+			this.localDeadline = '';
 		},
 
 		cancelEdit(): void {
+			this.$emit('cancel-edit');
 			this.resetForm();
 			this.focusInput();
 		},
@@ -128,6 +134,7 @@ export default defineComponent({
 					type="checkbox"
 					v-model="localPriority"
 				/>
+
 				<div
 					:class="[
 						$style.priorityIcon,
@@ -143,13 +150,29 @@ export default defineComponent({
 						size="20"
 					/>
 				</div>
+
 				<span :class="$style.priorityLabel">
 					{{ TEXT.priorityLabel }}
 				</span>
 			</label>
+
+			<label :class="$style.deadline">
+				<span :class="$style.deadlineLabel">Срок:</span>
+				<input
+					:class="$style.deadlineDatetime"
+					type="date"
+					v-model="localDeadline"
+					name=""
+					id=""
+				/>
+			</label>
 		</div>
 
-		<input type="submit" :class="$style.btn" :value="TEXT.btn" />
+		<input
+			type="submit"
+			:class="$style.btn"
+			:value="isEditing ? TEXT.alterBtn : TEXT.btn"
+		/>
 	</form>
 </template>
 
@@ -179,6 +202,7 @@ export default defineComponent({
 }
 .options {
 	display: flex;
+	justify-content: space-between;
 	gap: 8px;
 }
 .priority {
@@ -203,6 +227,16 @@ export default defineComponent({
 	position: relative;
 	top: 1px;
 	color: var(--gray);
+}
+.deadline {
+	display: flex;
+	align-items: flex-end;
+	gap: 4px;
+}
+.deadlineLabel {
+	color: var(--gray);
+}
+.deadlineDatetime {
 }
 .btn {
 	padding: 8px;

@@ -64,6 +64,14 @@ export default defineComponent({
 		handleEdit(): void {
 			this.$emit('edit', this.task);
 		},
+
+		formatDeadline(value: string): string {
+			const date = new Date(value);
+			return date.toLocaleDateString('ru-RU', {
+				day: 'numeric',
+				month: 'long',
+			});
+		},
 	},
 });
 </script>
@@ -92,9 +100,18 @@ export default defineComponent({
 				{{ task.text }}
 			</p>
 
-			<small :class="$style.textDate">
-				{{ TEXT.dateLabel + formatDate(task?.date) }}
-			</small>
+			<footer :class="$style.textFooter">
+				<small
+					v-if="task.deadline"
+					:class="[$style.textInfo, $style.textDeadline]"
+				>
+					{{ TEXT.deadlineLabel + formatDeadline(task.deadline) }}
+				</small>
+
+				<small :class="[$style.textInfo, $style.textDate]">
+					{{ TEXT.dateLabel + formatDate(task.date) }}
+				</small>
+			</footer>
 		</label>
 
 		<Icon
@@ -137,7 +154,7 @@ export default defineComponent({
 	text-decoration: line-through;
 }
 .checkbox:checked + .text .textDescription,
-.checkbox:checked + .text .textDate {
+.checkbox:checked + .text .textInfo {
 	color: var(--gray);
 }
 .text {
@@ -148,7 +165,15 @@ export default defineComponent({
 .textDescription {
 	white-space: pre-wrap;
 }
+.textFooter {
+	display: flex;
+	gap: 8px;
+}
+.textInfo {
+}
 .textDate {
+}
+.textDeadline {
 }
 .remove {
 	position: absolute;

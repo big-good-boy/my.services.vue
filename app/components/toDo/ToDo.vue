@@ -56,6 +56,7 @@ export default defineComponent({
 				title: payload.title,
 				text: payload.text,
 				priority: payload.priority,
+				deadline: payload.deadline || null,
 				done: false,
 				date: Date.now(),
 			});
@@ -78,6 +79,7 @@ export default defineComponent({
 								title: payload.title,
 								text: payload.text,
 								priority: payload.priority,
+								deadline: payload.deadline || null,
 						  }
 						: task
 				);
