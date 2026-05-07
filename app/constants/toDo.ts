@@ -7,4 +7,9 @@ export const TEXT = {
 	dateLabel: 'Создана ',
 	priorityLabel: 'Важно ',
 	deadlineLabel: 'Срок: ',
+	tasks: {
+		one: 'задача',
+		few: 'задачи',
+		many: 'задач',
+	},
 } as const;

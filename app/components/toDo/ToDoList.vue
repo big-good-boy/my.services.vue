@@ -1,6 +1,7 @@
 <script lang="ts">
-import type { Task } from '~/interfaces/task.interfaces.js';
+import type { Task, Translations } from '~/interfaces/task.interfaces.js';
 import ToDoTask from './ToDoTask.vue';
+import { TEXT } from '~/constants/toDo.js';
 
 export default defineComponent({
 	name: 'ToDoList',
@@ -18,6 +19,12 @@ export default defineComponent({
 
 	emits: ['remove', 'edit'],
 
+	data() {
+		return {
+			TEXT,
+		};
+	},
+
 	computed: {
 		numberOfActive(): number {
 			return this.tasks.filter((task) => !task.done).length;
@@ -25,9 +32,13 @@ export default defineComponent({
 	},
 
 	methods: {
-		formatActive(value: number): string {
+		formatActive(value: number, text: Translations): string {
 			return `${value} ${
-				value === 1 ? ' задача' : value < 5 ? ' задачи' : 'задач'
+				value === 1
+					? text.tasks.one
+					: value < 5
+					? text.tasks.few
+					: text.tasks.many
 			}`;
 		},
 	},
@@ -37,7 +48,7 @@ export default defineComponent({
 <template>
 	<header :class="$style.info">
 		<span :class="$style.active" v-if="numberOfActive">
-			{{ formatActive(numberOfActive) }}
+			{{ formatActive(numberOfActive, TEXT) }}
 		</span>
 	</header>
 	<ul :class="$style.list" v-if="tasks.length">
