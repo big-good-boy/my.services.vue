@@ -22,6 +22,7 @@ export default defineComponent({
 	data() {
 		return {
 			TEXT,
+			showHidden: true as boolean,
 		};
 	},
 
@@ -29,17 +30,23 @@ export default defineComponent({
 		numberOfActive(): number {
 			return this.tasks.filter((task) => !task.done).length;
 		},
+
+		hidden(): Task[] {
+			return !this.showHidden
+				? this.tasks.filter((task) => !task.done)
+				: this.tasks;
+		},
 	},
 
 	methods: {
-		formatActive(value: number, text: Translations): string {
-			return `${value} ${
-				value === 1
-					? text.tasks.one
-					: value < 5
-					? text.tasks.few
-					: text.tasks.many
-			}`;
+		formatActive(value: number): string {
+			const { one, few, many } = this.TEXT.tasks;
+			const lastDigit = value % 10;
+			const lastTwo = value % 100;
+			if (lastTwo >= 11 && lastTwo <= 14) return `${value} ${many}`;
+			if (lastDigit === 1) return `${value} ${one}`;
+			if (lastDigit >= 2 && lastDigit <= 4) return `${value} ${few}`;
+			return `${value} ${many}`;
 		},
 	},
 });
@@ -48,12 +55,35 @@ export default defineComponent({
 <template>
 	<header :class="$style.info">
 		<span :class="$style.active" v-if="numberOfActive">
-			{{ formatActive(numberOfActive, TEXT) }}
+			{{ formatActive(numberOfActive) }}
 		</span>
+
+		<label :class="$style.hidden">
+			<span :class="$style.hiddenLabel">
+				{{ TEXT.hiddenLabel }}
+			</span>
+
+			<input
+				:class="$style.hiddenCheckbox"
+				type="checkbox"
+				v-model="showHidden"
+			/>
+
+			<div :class="[$style.hiddenIcon, showHidden && $style.hiddenIconChecked]">
+				<Icon
+					:name="
+						showHidden
+							? 'cuida:checkbox-checked-outlined'
+							: 'cuida:checkbox-unchecked-outlined'
+					"
+					size="20"
+				/>
+			</div>
+		</label>
 	</header>
 	<ul :class="$style.list" v-if="tasks.length">
 		<ToDoTask
-			v-for="task in tasks"
+			v-for="task in hidden"
 			:key="task.id"
 			:task="task"
 			@remove="$emit('remove', task.id)"
@@ -73,7 +103,32 @@ export default defineComponent({
 	padding-left: 0;
 }
 .info {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
 	margin-top: 16px;
+	color: var(--gray);
+}
+.hidden {
+	display: flex;
+	align-items: flex-end;
+	gap: 4px;
+	cursor: pointer;
+}
+.hiddenIcon {
+	line-height: 0;
+	color: var(--blue);
+	width: 20px;
+	height: 20px;
+}
+.hiddenIconChecked {
+}
+.hiddenCheckbox {
+	display: none;
+}
+.hiddenLabel {
+	position: relative;
+	top: 1px;
 	color: var(--gray);
 }
 .active {

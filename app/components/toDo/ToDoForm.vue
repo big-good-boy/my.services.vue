@@ -144,8 +144,8 @@ export default defineComponent({
 					<Icon
 						:name="
 							localPriority
-								? 'material-symbols:radio-button-checked'
-								: 'material-symbols:radio-button-unchecked'
+								? 'cuida:checkbox-checked-outlined'
+								: 'cuida:checkbox-unchecked-outlined'
 						"
 						size="20"
 					/>

@@ -12,4 +12,5 @@ export const TEXT = {
 		few: 'задачи',
 		many: 'задач',
 	},
+	hiddenLabel: 'Выполненные',
 } as const;
