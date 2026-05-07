@@ -145,6 +145,7 @@ export default defineComponent({
 	border-color: var(--red);
 }
 .itemDone {
+	border-width: 1px;
 	border-color: var(--gray);
 }
 .checkbox {
