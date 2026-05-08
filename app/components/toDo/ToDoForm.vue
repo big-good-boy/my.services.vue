@@ -237,6 +237,10 @@ export default defineComponent({
 	color: var(--gray);
 }
 .deadlineDatetime {
+	border: 1px solid var(--blue);
+	border-radius: 4px;
+	outline-color: var(--blue);
+	color: var(--gray);
 }
 .btn {
 	padding: 8px;
