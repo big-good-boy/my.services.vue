@@ -12,5 +12,5 @@ export const TEXT = {
 		few: 'задачи',
 		many: 'задач',
 	},
-	hiddenLabel: 'Выполненные',
+	showOnlyActiveLabel: 'Выполненные',
 } as const;

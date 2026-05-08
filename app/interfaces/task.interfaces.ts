@@ -14,11 +14,3 @@ export interface TaskFormData {
 	priority: boolean;
 	deadline: string | null;
 }
-
-export interface Translations {
-	tasks: {
-		one: string;
-		few: string;
-		many: string;
-	};
-}

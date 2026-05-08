@@ -94,6 +94,10 @@ export default defineComponent({
 		cancelEditing(): void {
 			this.editingTask = null;
 		},
+
+		clearCompleted(): void {
+			this.tasks = this.tasks.filter((task) => !task.done);
+		},
 	},
 });
 </script>
@@ -111,7 +115,12 @@ export default defineComponent({
 			@cancel-edit="cancelEditing"
 		/>
 
-		<ToDoList :tasks="tasks" @remove="removeTask" @edit="startEditing" />
+		<ToDoList
+			:tasks="tasks"
+			@remove="removeTask"
+			@edit="startEditing"
+			@clear-completed="clearCompleted"
+		/>
 	</section>
 </template>
 
