@@ -20,6 +20,14 @@ export default defineComponent({
 		};
 	},
 
+	computed: {
+		isOverdue(): boolean {
+			if (!this.task.deadline) return false;
+			const deadlineMark = new Date(this.task.deadline).setHours(0, 0, 0, 0);
+			return deadlineMark < Date.now();
+		},
+	},
+
 	methods: {
 		formatDate(timestamp: number): string {
 			const taskDate = new Date(timestamp);
@@ -103,7 +111,11 @@ export default defineComponent({
 			<footer :class="$style.textFooter">
 				<small
 					v-if="task.deadline"
-					:class="[$style.textInfo, $style.textDeadline]"
+					:class="[
+						$style.textInfo,
+						$style.textDeadline,
+						isOverdue && $style.textInfoOverdue,
+					]"
 				>
 					{{ TEXT.deadlineLabel + formatDeadline(task.deadline) }}
 				</small>
@@ -171,6 +183,10 @@ export default defineComponent({
 	gap: 8px;
 }
 .textInfo {
+}
+.textInfoOverdue {
+	font-weight: 600;
+	color: var(--red);
 }
 .textDate {
 }

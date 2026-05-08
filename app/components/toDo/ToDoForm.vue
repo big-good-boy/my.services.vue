@@ -251,6 +251,7 @@ export default defineComponent({
 	background-color: var(--green);
 	color: white;
 	cursor: pointer;
+	outline-color: var(--blue);
 	transition: var(--transition);
 }
 .btn:hover {

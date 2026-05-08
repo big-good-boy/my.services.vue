@@ -56,6 +56,9 @@ export default defineComponent({
 
 		popupToggle(): void {
 			this.popup = !this.popup;
+			this.$nextTick(() => {
+				(this.$refs.popupRef as HTMLElement)?.focus();
+			});
 		},
 
 		removeCompleted(): void {
@@ -110,7 +113,14 @@ export default defineComponent({
 		</button>
 	</header>
 
-	<div :class="$style.popup" v-if="popup" @click="popupToggle">
+	<div
+		:class="$style.popup"
+		v-if="popup"
+		@click="popupToggle"
+		tabindex="0"
+		ref="popupRef"
+		@keydown.esc="popupToggle"
+	>
 		<div :class="$style.popupInner" @click.stop>
 			<div :class="$style.popupTitle">Удалить выполненные задачи?</div>
 			<div :class="$style.popupBtns">
@@ -196,6 +206,7 @@ export default defineComponent({
 	color: white;
 	cursor: pointer;
 	transition: var(--transition);
+	outline-color: var(--blue);
 }
 .clear:hover {
 	color: var(--red);
