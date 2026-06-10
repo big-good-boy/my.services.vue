@@ -1,3 +1,25 @@
+<template>
+	<section :class="[$style.ToDo, 'container']">
+		<h2 :class="$style.title">
+			{{ TEXT.title }}
+		</h2>
+
+		<ToDoForm
+			@add="addTask"
+			@edit="editTask"
+			:task-to-edit="editingTask"
+			@cancel-edit="cancelEditing"
+		/>
+
+		<ToDoList
+			:tasks="tasks"
+			@remove="removeTask"
+			@edit="startEditing"
+			@clear-completed="clearCompleted"
+		/>
+	</section>
+</template>
+
 <script lang="ts">
 import type { Task, TaskFormData } from '~/interfaces/task.interfaces.js';
 import { TEXT } from '~/constants/toDo.js';
@@ -101,28 +123,6 @@ export default defineComponent({
 	},
 });
 </script>
-
-<template>
-	<section :class="[$style.ToDo, 'container']">
-		<h2 :class="$style.title">
-			{{ TEXT.title }}
-		</h2>
-
-		<ToDoForm
-			@add="addTask"
-			@edit="editTask"
-			:task-to-edit="editingTask"
-			@cancel-edit="cancelEditing"
-		/>
-
-		<ToDoList
-			:tasks="tasks"
-			@remove="removeTask"
-			@edit="startEditing"
-			@clear-completed="clearCompleted"
-		/>
-	</section>
-</template>
 
 <style lang="css" module>
 .ToDo {

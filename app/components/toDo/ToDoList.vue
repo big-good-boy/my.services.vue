@@ -1,74 +1,3 @@
-<script lang="ts">
-import type { Task } from '~/interfaces/task.interfaces.js';
-import ToDoTask from './ToDoTask.vue';
-import { TEXT } from '~/constants/toDo.js';
-
-export default defineComponent({
-	name: 'ToDoList',
-
-	components: {
-		ToDoTask,
-	},
-
-	props: {
-		tasks: {
-			type: Array as () => Task[],
-			required: true,
-		},
-	},
-
-	emits: ['remove', 'edit', 'clear-completed'],
-
-	data() {
-		return {
-			TEXT,
-			visibleCompleted: true as boolean,
-			popup: false as boolean,
-		};
-	},
-
-	computed: {
-		numberOfActive(): number {
-			return this.tasks.filter((task) => !task.done).length;
-		},
-
-		visibleTasks(): Task[] {
-			return !this.visibleCompleted
-				? this.tasks.filter((task) => !task.done)
-				: this.tasks;
-		},
-
-		hasCompletedTasks(): boolean {
-			return this.tasks.some((task) => task.done);
-		},
-	},
-
-	methods: {
-		formatActive(value: number): string {
-			const { one, few, many } = this.TEXT.tasks;
-			const lastDigit = value % 10;
-			const lastTwo = value % 100;
-			if (lastTwo >= 11 && lastTwo <= 14) return `${value} ${many}`;
-			if (lastDigit === 1) return `${value} ${one}`;
-			if (lastDigit >= 2 && lastDigit <= 4) return `${value} ${few}`;
-			return `${value} ${many}`;
-		},
-
-		popupToggle(): void {
-			this.popup = !this.popup;
-			this.$nextTick(() => {
-				(this.$refs.popupRef as HTMLElement)?.focus();
-			});
-		},
-
-		removeCompleted(): void {
-			this.$emit('clear-completed');
-			this.popupToggle();
-		},
-	},
-});
-</script>
-
 <template>
 	<header :class="$style.info">
 		<span :class="$style.active" v-if="numberOfActive">
@@ -150,6 +79,77 @@ export default defineComponent({
 		/>
 	</ul>
 </template>
+
+<script lang="ts">
+import type { Task } from '~/interfaces/task.interfaces.js';
+import ToDoTask from './ToDoTask.vue';
+import { TEXT } from '~/constants/toDo.js';
+
+export default defineComponent({
+	name: 'ToDoList',
+
+	components: {
+		ToDoTask,
+	},
+
+	props: {
+		tasks: {
+			type: Array as () => Task[],
+			required: true,
+		},
+	},
+
+	emits: ['remove', 'edit', 'clear-completed'],
+
+	data() {
+		return {
+			TEXT,
+			visibleCompleted: true as boolean,
+			popup: false as boolean,
+		};
+	},
+
+	computed: {
+		numberOfActive(): number {
+			return this.tasks.filter((task) => !task.done).length;
+		},
+
+		visibleTasks(): Task[] {
+			return !this.visibleCompleted
+				? this.tasks.filter((task) => !task.done)
+				: this.tasks;
+		},
+
+		hasCompletedTasks(): boolean {
+			return this.tasks.some((task) => task.done);
+		},
+	},
+
+	methods: {
+		formatActive(value: number): string {
+			const { one, few, many } = this.TEXT.tasks;
+			const lastDigit = value % 10;
+			const lastTwo = value % 100;
+			if (lastTwo >= 11 && lastTwo <= 14) return `${value} ${many}`;
+			if (lastDigit === 1) return `${value} ${one}`;
+			if (lastDigit >= 2 && lastDigit <= 4) return `${value} ${few}`;
+			return `${value} ${many}`;
+		},
+
+		popupToggle(): void {
+			this.popup = !this.popup;
+			this.$nextTick(() => {
+				(this.$refs.popupRef as HTMLElement)?.focus();
+			});
+		},
+
+		removeCompleted(): void {
+			this.$emit('clear-completed');
+			this.popupToggle();
+		},
+	},
+});
+</script>
 
 <style lang="css" module>
 .list {

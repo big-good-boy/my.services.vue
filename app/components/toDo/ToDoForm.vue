@@ -1,3 +1,75 @@
+<template>
+	<form
+		:class="$style.form"
+		@submit.prevent="handleSubmit"
+		@keydown.esc="cancelEdit"
+	>
+		<input
+			:class="$style.input"
+			v-model="localTaskName"
+			type="text"
+			ref="taskInput"
+			:placeholder="TEXT.placeholderInput"
+			@keydown.enter.prevent="handleInputEnter"
+		/>
+
+		<textarea
+			:class="$style.textarea"
+			ref="taskTextarea"
+			v-model="localTaskText"
+			:placeholder="TEXT.placeholderTextarea"
+			@keydown.enter="handleTextareaEnter"
+		/>
+
+		<div :class="$style.options">
+			<label :class="$style.priority">
+				<input
+					:class="$style.priorityCheckbox"
+					type="checkbox"
+					v-model="localPriority"
+				/>
+
+				<div
+					:class="[
+						$style.priorityIcon,
+						localPriority && $style.priorityIconChecked,
+					]"
+				>
+					<Icon
+						:name="
+							localPriority
+								? 'cuida:checkbox-checked-outlined'
+								: 'cuida:checkbox-unchecked-outlined'
+						"
+						size="20"
+					/>
+				</div>
+
+				<span :class="$style.priorityLabel">
+					{{ TEXT.priorityLabel }}
+				</span>
+			</label>
+
+			<label :class="$style.deadline">
+				<span :class="$style.deadlineLabel">Срок:</span>
+				<input
+					:class="$style.deadlineDatetime"
+					type="date"
+					v-model="localDeadline"
+					name=""
+					id=""
+				/>
+			</label>
+		</div>
+
+		<input
+			type="submit"
+			:class="$style.btn"
+			:value="isEditing ? TEXT.alterBtn : TEXT.btn"
+		/>
+	</form>
+</template>
+
 <script lang="ts">
 import { TEXT } from '~/constants/toDo.js';
 import type { Task } from '~/interfaces/task.interfaces.js';
@@ -103,78 +175,6 @@ export default defineComponent({
 	},
 });
 </script>
-
-<template>
-	<form
-		:class="$style.form"
-		@submit.prevent="handleSubmit"
-		@keydown.esc="cancelEdit"
-	>
-		<input
-			:class="$style.input"
-			v-model="localTaskName"
-			type="text"
-			ref="taskInput"
-			:placeholder="TEXT.placeholderInput"
-			@keydown.enter.prevent="handleInputEnter"
-		/>
-
-		<textarea
-			:class="$style.textarea"
-			ref="taskTextarea"
-			v-model="localTaskText"
-			:placeholder="TEXT.placeholderTextarea"
-			@keydown.enter="handleTextareaEnter"
-		/>
-
-		<div :class="$style.options">
-			<label :class="$style.priority">
-				<input
-					:class="$style.priorityCheckbox"
-					type="checkbox"
-					v-model="localPriority"
-				/>
-
-				<div
-					:class="[
-						$style.priorityIcon,
-						localPriority && $style.priorityIconChecked,
-					]"
-				>
-					<Icon
-						:name="
-							localPriority
-								? 'cuida:checkbox-checked-outlined'
-								: 'cuida:checkbox-unchecked-outlined'
-						"
-						size="20"
-					/>
-				</div>
-
-				<span :class="$style.priorityLabel">
-					{{ TEXT.priorityLabel }}
-				</span>
-			</label>
-
-			<label :class="$style.deadline">
-				<span :class="$style.deadlineLabel">Срок:</span>
-				<input
-					:class="$style.deadlineDatetime"
-					type="date"
-					v-model="localDeadline"
-					name=""
-					id=""
-				/>
-			</label>
-		</div>
-
-		<input
-			type="submit"
-			:class="$style.btn"
-			:value="isEditing ? TEXT.alterBtn : TEXT.btn"
-		/>
-	</form>
-</template>
 
 <style lang="css" module>
 .form {

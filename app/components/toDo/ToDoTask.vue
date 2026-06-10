@@ -1,3 +1,62 @@
+<template>
+	<li
+		:class="[
+			$style.item,
+			task.priority && $style.itemPriority,
+			task.done && $style.itemDone,
+		]"
+	>
+		<input
+			:class="$style.checkbox"
+			type="checkbox"
+			:id="`_${task.id}`"
+			v-model="task.done"
+		/>
+
+		<label :class="$style.text" :for="`_${task.id}`">
+			<span :class="$style.textTitle">
+				{{ task.title }}
+			</span>
+
+			<p :class="$style.textDescription">
+				{{ task.text }}
+			</p>
+
+			<footer :class="$style.textFooter">
+				<small
+					v-if="task.deadline"
+					:class="[
+						$style.textInfo,
+						$style.textDeadline,
+						isOverdue && $style.textInfoOverdue,
+					]"
+				>
+					{{ TEXT.deadlineLabel + formatDeadline(task.deadline) }}
+				</small>
+
+				<small :class="[$style.textInfo, $style.textDate]">
+					{{ TEXT.dateLabel + formatDate(task.date) }}
+				</small>
+			</footer>
+		</label>
+
+		<Icon
+			:class="$style.remove"
+			@click="handleRemove"
+			name="material-symbols:delete-outline"
+			size="20"
+		/>
+
+		<Icon
+			v-if="!task.done"
+			:class="$style.edit"
+			@click="handleEdit"
+			name="material-symbols:ink-pen-outline"
+			size="20"
+		/>
+	</li>
+</template>
+
 <script lang="ts">
 import type { Task } from '~/interfaces/task.interfaces.js';
 import { TEXT } from '~/constants/toDo.js';
@@ -83,65 +142,6 @@ export default defineComponent({
 	},
 });
 </script>
-
-<template>
-	<li
-		:class="[
-			$style.item,
-			task.priority && $style.itemPriority,
-			task.done && $style.itemDone,
-		]"
-	>
-		<input
-			:class="$style.checkbox"
-			type="checkbox"
-			:id="`_${task.id}`"
-			v-model="task.done"
-		/>
-
-		<label :class="$style.text" :for="`_${task.id}`">
-			<span :class="$style.textTitle">
-				{{ task.title }}
-			</span>
-
-			<p :class="$style.textDescription">
-				{{ task.text }}
-			</p>
-
-			<footer :class="$style.textFooter">
-				<small
-					v-if="task.deadline"
-					:class="[
-						$style.textInfo,
-						$style.textDeadline,
-						isOverdue && $style.textInfoOverdue,
-					]"
-				>
-					{{ TEXT.deadlineLabel + formatDeadline(task.deadline) }}
-				</small>
-
-				<small :class="[$style.textInfo, $style.textDate]">
-					{{ TEXT.dateLabel + formatDate(task.date) }}
-				</small>
-			</footer>
-		</label>
-
-		<Icon
-			:class="$style.remove"
-			@click="handleRemove"
-			name="material-symbols:delete-outline"
-			size="20"
-		/>
-
-		<Icon
-			v-if="!task.done"
-			:class="$style.edit"
-			@click="handleEdit"
-			name="material-symbols:ink-pen-outline"
-			size="20"
-		/>
-	</li>
-</template>
 
 <style lang="css" module>
 .item {

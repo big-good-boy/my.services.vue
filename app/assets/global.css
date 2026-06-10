@@ -9,6 +9,11 @@
 body {
 	background-color: #112b50;
 }
+.main {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
 .container {
 	width: 100%;
 	max-width: 1200px;
