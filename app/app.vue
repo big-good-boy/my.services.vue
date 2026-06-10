@@ -1,37 +1,41 @@
 <template>
 	<main class="main">
 		<section :class="[$style.services, 'container']">
-			<ul :class="$style.list" ref="list">
+			<ul :class="$style.list" ref="list" v-if="services">
 				<li
-					:class="[$style.item, activeService === item ? $style.active : '']"
+					:class="[
+						$style.item,
+						activeService?.name === item.name && $style.active,
+					]"
 					v-for="(item, index) in services"
 					:key="index"
 					@click="activeService = item"
-				>
-					{{ item }}
-				</li>
+					v-text="item.name"
+				/>
 			</ul>
 		</section>
 
-		<ToDo v-if="activeService == services[0]" />
-		<ToDo v-if="activeService == services[1]" />
+		<component :is="activeService?.component" />
 	</main>
 </template>
 
 <script lang="ts">
+import ToDo from './components/toDo/ToDo.vue';
+
+const services = [
+	{ name: 'Список задач', component: markRaw(ToDo) },
+	{ name: "Бл'ОК", component: markRaw(ToDo) },
+];
+
 export default defineComponent({
 	name: 'App',
 
 	data() {
 		return {
-			activeService: 'Список задач',
-			services: ['Список задач', "Бл'ОК"],
+			activeService: services[0],
+			services,
 		};
 	},
-
-	mounted() {},
-
-	methods: {},
 });
 </script>
 
