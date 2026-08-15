@@ -1,3 +1,72 @@
+<script lang="ts" setup>
+import type { Task } from '~/interfaces/task.interfaces.js';
+import { TEXT } from '~/constants/toDo.js';
+
+const { task } = defineProps<{
+	task: Task;
+}>();
+
+const emit = defineEmits<{ remove: [id: string]; edit: [task: Task] }>();
+
+const isOverdue = computed((): boolean => {
+	if (!task.deadline) return false;
+	const deadlineMark = new Date(task.deadline).setHours(0, 0, 0, 0);
+	return deadlineMark < Date.now();
+});
+
+const handleRemove = (): void => {
+	emit('remove', task.id);
+};
+
+const handleEdit = (): void => {
+	emit('edit', task);
+};
+
+const formatDeadline = (value: string): string => {
+	const date = new Date(value);
+	return date.toLocaleDateString('ru-RU', {
+		day: 'numeric',
+		month: 'long',
+	});
+};
+
+const formatDate = (timestamp: number): string => {
+	const taskDate = new Date(timestamp);
+
+	// Красивый вывод даты создания
+	const now = new Date();
+	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const yesterday = new Date(today);
+	yesterday.setDate(yesterday.getDate() - 1);
+	const taskDay = new Date(
+		taskDate.getFullYear(),
+		taskDate.getMonth(),
+		taskDate.getDate()
+	);
+	const differenceDays = Math.floor(
+		(today.getTime() - taskDay.getTime()) / (1000 * 60 * 60 * 24)
+	);
+	if (taskDate.toDateString() === today.toDateString()) {
+		return 'сегодня';
+	}
+	if (taskDate.toDateString() === yesterday.toDateString()) {
+		return 'вчера';
+	}
+	if (differenceDays < 5) {
+		return `${differenceDays} дня назад`;
+	}
+	if (differenceDays < 8) {
+		return `${differenceDays} дней назад`;
+	}
+
+	return taskDate.toLocaleDateString('ru-RU', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+	});
+};
+</script>
+
 <template>
 	<li
 		:class="[
@@ -56,92 +125,6 @@
 		/>
 	</li>
 </template>
-
-<script lang="ts">
-import type { Task } from '~/interfaces/task.interfaces.js';
-import { TEXT } from '~/constants/toDo.js';
-
-export default defineComponent({
-	name: 'ToDoTask',
-
-	props: {
-		task: {
-			type: Object as () => Task,
-			required: true,
-		},
-	},
-
-	emits: ['remove', 'edit'],
-
-	data() {
-		return {
-			TEXT,
-		};
-	},
-
-	computed: {
-		isOverdue(): boolean {
-			if (!this.task.deadline) return false;
-			const deadlineMark = new Date(this.task.deadline).setHours(0, 0, 0, 0);
-			return deadlineMark < Date.now();
-		},
-	},
-
-	methods: {
-		formatDate(timestamp: number): string {
-			const taskDate = new Date(timestamp);
-
-			// Красивый вывод даты создания
-			const now = new Date();
-			const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-			const yesterday = new Date(today);
-			yesterday.setDate(yesterday.getDate() - 1);
-			const taskDay = new Date(
-				taskDate.getFullYear(),
-				taskDate.getMonth(),
-				taskDate.getDate()
-			);
-			const differenceDays = Math.floor(
-				(today.getTime() - taskDay.getTime()) / (1000 * 60 * 60 * 24)
-			);
-			if (taskDate.toDateString() === today.toDateString()) {
-				return 'сегодня';
-			}
-			if (taskDate.toDateString() === yesterday.toDateString()) {
-				return 'вчера';
-			}
-			if (differenceDays < 5) {
-				return `${differenceDays} дня назад`;
-			}
-			if (differenceDays < 8) {
-				return `${differenceDays} дней назад`;
-			}
-
-			return taskDate.toLocaleDateString('ru-RU', {
-				day: 'numeric',
-				month: 'long',
-				year: 'numeric',
-			});
-		},
-
-		handleRemove(): void {
-			this.$emit('remove', this.task.id);
-		},
-
-		handleEdit(): void {
-			this.$emit('edit', this.task);
-		},
-
-		formatDeadline(value: string): string {
-			const date = new Date(value);
-			return date.toLocaleDateString('ru-RU', {
-				day: 'numeric',
-				month: 'long',
-			});
-		},
-	},
-});
-</script>
 
 <style lang="css" module>
 .item {
