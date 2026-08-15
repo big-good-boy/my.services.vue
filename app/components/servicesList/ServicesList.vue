@@ -8,7 +8,7 @@
 				]"
 				v-for="(item, index) in servicesList"
 				:key="index"
-				@click="activeService = item"
+				@click="$emit('activeService', item)"
 				v-text="item.name"
 			/>
 		</ul>
@@ -17,14 +17,22 @@
 
 <script lang="ts">
 import ToDo from '~/components/toDo/ToDo.vue';
+import ToDoForm from '../toDo/ToDoForm.vue';
 
 const servicesList = [
 	{ name: 'Список задач', component: markRaw(ToDo) },
-	{ name: "Бл'ОК", component: markRaw(ToDo) },
+	{ name: "Бл'ОК", component: markRaw(ToDoForm) },
 ];
 
 export default defineComponent({
 	name: 'App',
+
+	props: {
+		serviceNames: {
+			type: Array,
+			required: true,
+		},
+	},
 
 	data() {
 		return {
@@ -32,6 +40,8 @@ export default defineComponent({
 			servicesList,
 		};
 	},
+
+	emits: ['activeService'],
 });
 </script>
 
