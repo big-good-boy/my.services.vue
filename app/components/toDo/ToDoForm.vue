@@ -1,3 +1,199 @@
+<script lang="ts" setup>
+import { TEXT } from '~/constants/toDo.js';
+import type { Task, TaskFormData } from '~/interfaces/task.interfaces.js';
+
+// export default defineComponent({
+// 	name: 'ToDoForm',
+
+// 	props: {
+// 		taskToEdit: {
+// 			type: Object as () => Task | null,
+// 			default: null,
+// 		},
+// 	},
+
+// 	emits: ['add', 'edit', 'cancel-edit'],
+
+// 	data() {
+// 		return {
+// 			localTaskName: '' as string,
+// 			localTaskText: '' as string,
+// 			localPriority: false as boolean,
+// 			localDeadline: '' as string,
+// 			TEXT,
+// 		};
+// 	},
+
+// 	computed: {
+// 		isEditing(): boolean {
+// 			return this.taskToEdit !== null;
+// 		},
+// 	},
+
+// 	watch: {
+// 		taskToEdit: {
+// 			handler(newTask: Task | null) {
+// 				if (newTask) {
+// 					this.localTaskName = newTask.title;
+// 					this.localTaskText = newTask.text;
+// 					this.localPriority = newTask.priority;
+// 					this.localDeadline = newTask.deadline || '';
+// 				}
+// 			},
+// 			immediate: true,
+// 		},
+// 	},
+
+// 	methods: {
+// 		handleSubmit(): void {
+// 			if (this.localTaskName.trim().length) {
+// 				const payload = {
+// 					title: this.localTaskName,
+// 					text: this.localTaskText,
+// 					priority: this.localPriority,
+// 					deadline: this.localDeadline || null,
+// 				};
+
+// 				if (this.isEditing) {
+// 					this.$emit('edit', payload);
+// 				} else {
+// 					this.$emit('add', payload);
+// 				}
+
+// 				this.resetForm();
+// 			}
+
+// 			this.focusInput();
+// 		},
+
+// 		resetForm(): void {
+// 			this.localTaskName = '';
+// 			this.localTaskText = '';
+// 			this.localPriority = false;
+// 			this.localDeadline = '';
+// 		},
+
+// 		cancelEdit(): void {
+// 			this.$emit('cancel-edit');
+// 			this.resetForm();
+// 			this.focusInput();
+// 		},
+
+// 		focusInput(): void {
+// 			this.$nextTick(() => {
+// 				(this.$refs.taskInput as HTMLInputElement)?.focus();
+// 			});
+// 		},
+
+// 		handleInputEnter(): void {
+// 			this.localTaskName.trim() ? this.focusTextarea() : null;
+// 		},
+
+// 		focusTextarea(): void {
+// 			(this.$refs?.taskTextarea as HTMLTextAreaElement)?.focus();
+// 		},
+
+// 		handleTextareaEnter(event: KeyboardEvent): void {
+// 			!event.shiftKey && this.handleSubmit();
+// 		},
+// 	},
+
+// 	mounted() {
+// 		this.focusInput();
+// 	},
+// });
+
+const emit = defineEmits<{
+	add: [payload: TaskFormData];
+	edit: [payload: TaskFormData];
+	'cancel-edit': [];
+}>();
+
+const localTaskName = ref<string>('');
+const localTaskText = ref<string>('');
+const localPriority = ref<boolean>(false);
+const localDeadline = ref<string>('');
+const taskInput = ref<HTMLInputElement | null>(null);
+const taskTextarea = ref<HTMLTextAreaElement | null>(null);
+
+const { taskToEdit } = defineProps<{
+	taskToEdit: Task | null;
+}>();
+
+watch(
+	() => taskToEdit,
+	(newTask: Task | null) => {
+		if (newTask) {
+			localTaskName.value = newTask.title;
+			localTaskText.value = newTask.text;
+			localPriority.value = newTask.priority;
+			localDeadline.value = newTask.deadline || '';
+		}
+	},
+	{ immediate: true }
+);
+
+const isEditing = computed((): boolean => {
+	return taskToEdit !== null;
+});
+
+onMounted(() => {
+	focusInput();
+});
+
+function handleSubmit(): void {
+	if (localTaskName.value.trim().length) {
+		const payload: TaskFormData = {
+			title: localTaskName.value,
+			text: localTaskText.value,
+			priority: localPriority.value,
+			deadline: localDeadline.value || null,
+		};
+
+		if (isEditing.value) {
+			emit('edit', payload);
+		} else {
+			emit('add', payload);
+		}
+
+		resetForm();
+	}
+
+	focusInput();
+}
+
+function resetForm(): void {
+	localTaskName.value = '';
+	localTaskText.value = '';
+	localPriority.value = false;
+	localDeadline.value = '';
+}
+
+function cancelEdit(): void {
+	emit('cancel-edit');
+	resetForm();
+	focusInput();
+}
+
+function focusInput(): void {
+	nextTick(() => {
+		taskInput.value?.focus();
+	});
+}
+
+function handleInputEnter(): void {
+	localTaskName.value.trim() ? focusTextarea() : null;
+}
+
+function focusTextarea(): void {
+	taskTextarea.value?.focus();
+}
+
+function handleTextareaEnter(event: KeyboardEvent): void {
+	!event.shiftKey && handleSubmit();
+}
+</script>
+
 <template>
 	<form
 		:class="$style.form"
@@ -69,112 +265,6 @@
 		/>
 	</form>
 </template>
-
-<script lang="ts">
-import { TEXT } from '~/constants/toDo.js';
-import type { Task } from '~/interfaces/task.interfaces.js';
-
-export default defineComponent({
-	name: 'ToDoForm',
-
-	props: {
-		taskToEdit: {
-			type: Object as () => Task | null,
-			default: null,
-		},
-	},
-
-	emits: ['add', 'edit', 'cancel-edit'],
-
-	data() {
-		return {
-			localTaskName: '' as string,
-			localTaskText: '' as string,
-			localPriority: false as boolean,
-			localDeadline: '' as string,
-			TEXT,
-		};
-	},
-
-	computed: {
-		isEditing(): boolean {
-			return this.taskToEdit !== null;
-		},
-	},
-
-	watch: {
-		taskToEdit: {
-			handler(newTask: Task | null) {
-				if (newTask) {
-					this.localTaskName = newTask.title;
-					this.localTaskText = newTask.text;
-					this.localPriority = newTask.priority;
-					this.localDeadline = newTask.deadline || '';
-				}
-			},
-			immediate: true,
-		},
-	},
-
-	methods: {
-		handleSubmit(): void {
-			if (this.localTaskName.trim().length) {
-				const payload = {
-					title: this.localTaskName,
-					text: this.localTaskText,
-					priority: this.localPriority,
-					deadline: this.localDeadline || null,
-				};
-
-				if (this.isEditing) {
-					this.$emit('edit', payload);
-				} else {
-					this.$emit('add', payload);
-				}
-
-				this.resetForm();
-			}
-
-			this.focusInput();
-		},
-
-		resetForm(): void {
-			this.localTaskName = '';
-			this.localTaskText = '';
-			this.localPriority = false;
-			this.localDeadline = '';
-		},
-
-		cancelEdit(): void {
-			this.$emit('cancel-edit');
-			this.resetForm();
-			this.focusInput();
-		},
-
-		focusInput(): void {
-			this.$nextTick(() => {
-				(this.$refs.taskInput as HTMLInputElement)?.focus();
-			});
-		},
-
-		handleInputEnter(): void {
-			this.localTaskName.trim() ? this.focusTextarea() : null;
-		},
-
-		focusTextarea(): void {
-			(this.$refs?.taskTextarea as HTMLTextAreaElement)?.focus();
-		},
-
-		handleTextareaEnter(event: KeyboardEvent): void {
-			!event.shiftKey && this.handleSubmit();
-		},
-	},
-
-	mounted() {
-		this.focusInput();
-	},
-});
-</script>
 
 <style lang="css" module>
 .form {
