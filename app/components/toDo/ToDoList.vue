@@ -1,3 +1,57 @@
+<script lang="ts" setup>
+import type { Task } from '~/interfaces/task.interfaces.js';
+import ToDoTask from './ToDoTask.vue';
+import { TEXT } from '~/constants/toDo.js';
+
+const emit = defineEmits<{
+	remove: [id: string];
+	edit: [task: Task];
+	'clear-completed': [];
+}>();
+
+const { tasks } = defineProps<{
+	tasks: Task[];
+}>();
+
+const visibleCompleted = ref<boolean>(true);
+const popup = ref<boolean>(false);
+const popupRef = ref<HTMLElement | null>(null);
+
+const numberOfActive = computed((): number => {
+	return tasks.filter((task) => !task.done).length;
+});
+
+const visibleTasks = computed((): Task[] => {
+	return !visibleCompleted.value ? tasks.filter((task) => !task.done) : tasks;
+});
+
+const hasCompletedTasks = computed((): boolean => {
+	return tasks.some((task) => task.done);
+});
+
+function formatActive(value: number): string {
+	const { one, few, many } = TEXT.tasks;
+	const lastDigit = value % 10;
+	const lastTwo = value % 100;
+	if (lastTwo >= 11 && lastTwo <= 14) return `${value} ${many}`;
+	if (lastDigit === 1) return `${value} ${one}`;
+	if (lastDigit >= 2 && lastDigit <= 4) return `${value} ${few}`;
+	return `${value} ${many}`;
+}
+
+function popupToggle(): void {
+	popup.value = !popup.value;
+	nextTick(() => {
+		popupRef.value?.focus();
+	});
+}
+
+function removeCompleted(): void {
+	emit('clear-completed');
+	popupToggle();
+}
+</script>
+
 <template>
 	<header :class="$style.info">
 		<span :class="$style.active" v-if="numberOfActive">
@@ -74,82 +128,11 @@
 			v-for="task in visibleTasks"
 			:key="task.id"
 			:task="task"
-			@remove="$emit('remove', task.id)"
-			@edit="$emit('edit', task)"
+			@remove="emit('remove', task.id)"
+			@edit="emit('edit', task)"
 		/>
 	</ul>
 </template>
-
-<script lang="ts">
-import type { Task } from '~/interfaces/task.interfaces.js';
-import ToDoTask from './ToDoTask.vue';
-import { TEXT } from '~/constants/toDo.js';
-
-export default defineComponent({
-	name: 'ToDoList',
-
-	components: {
-		ToDoTask,
-	},
-
-	props: {
-		tasks: {
-			type: Array as () => Task[],
-			required: true,
-		},
-	},
-
-	emits: ['remove', 'edit', 'clear-completed'],
-
-	data() {
-		return {
-			TEXT,
-			visibleCompleted: true as boolean,
-			popup: false as boolean,
-		};
-	},
-
-	computed: {
-		numberOfActive(): number {
-			return this.tasks.filter((task) => !task.done).length;
-		},
-
-		visibleTasks(): Task[] {
-			return !this.visibleCompleted
-				? this.tasks.filter((task) => !task.done)
-				: this.tasks;
-		},
-
-		hasCompletedTasks(): boolean {
-			return this.tasks.some((task) => task.done);
-		},
-	},
-
-	methods: {
-		formatActive(value: number): string {
-			const { one, few, many } = this.TEXT.tasks;
-			const lastDigit = value % 10;
-			const lastTwo = value % 100;
-			if (lastTwo >= 11 && lastTwo <= 14) return `${value} ${many}`;
-			if (lastDigit === 1) return `${value} ${one}`;
-			if (lastDigit >= 2 && lastDigit <= 4) return `${value} ${few}`;
-			return `${value} ${many}`;
-		},
-
-		popupToggle(): void {
-			this.popup = !this.popup;
-			this.$nextTick(() => {
-				(this.$refs.popupRef as HTMLElement)?.focus();
-			});
-		},
-
-		removeCompleted(): void {
-			this.$emit('clear-completed');
-			this.popupToggle();
-		},
-	},
-});
-</script>
 
 <style lang="css" module>
 .list {
