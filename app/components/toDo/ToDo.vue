@@ -1,3 +1,84 @@
+<script lang="ts" setup>
+import type { Task, TaskFormData } from '~/interfaces/task.interfaces.js';
+import { TEXT } from '~/constants/toDo.js';
+import ToDoForm from './ToDoForm.vue';
+import ToDoList from './ToDoList.vue';
+
+const tasks = ref<Task[]>([]);
+const editingTask = ref<Task | null>(null);
+
+onMounted(() => {
+	loadTasks();
+});
+
+watch(tasks, () => saveTasks(), { deep: true });
+
+function loadTasks(): void {
+	const saved = localStorage.getItem('tasks');
+	if (saved) {
+		try {
+			tasks.value = JSON.parse(saved);
+		} catch (e) {
+			console.error('Ошибка загрузки задач:', e);
+			tasks.value = [];
+		}
+	}
+}
+
+function saveTasks(): void {
+	localStorage.setItem('tasks', JSON.stringify(tasks.value));
+}
+
+function addTask(payload: TaskFormData): void {
+	tasks.value.push({
+		id: generateId(),
+		title: payload.title,
+		text: payload.text,
+		priority: payload.priority,
+		deadline: payload.deadline || null,
+		done: false,
+		date: Date.now(),
+	});
+}
+
+function removeTask(id: string): void {
+	tasks.value = tasks.value.filter((task) => task.id !== id);
+}
+
+function generateId(): string {
+	return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function editTask(payload: TaskFormData): void {
+	if (editingTask.value) {
+		tasks.value = tasks.value.map((task) =>
+			task.id === editingTask.value!.id
+				? {
+						...task,
+						title: payload.title,
+						text: payload.text,
+						priority: payload.priority,
+						deadline: payload.deadline || null,
+					}
+				: task
+		);
+	}
+	cancelEditing();
+}
+
+function startEditing(task: Task): void {
+	editingTask.value = { ...task };
+}
+
+function cancelEditing(): void {
+	editingTask.value = null;
+}
+
+function clearCompleted(): void {
+	tasks.value = tasks.value.filter((task) => !task.done);
+}
+</script>
+
 <template>
 	<section :class="[$style.ToDo, 'container']">
 		<h2 :class="$style.title">
@@ -19,110 +100,6 @@
 		/>
 	</section>
 </template>
-
-<script lang="ts">
-import type { Task, TaskFormData } from '~/interfaces/task.interfaces.js';
-import { TEXT } from '~/constants/toDo.js';
-import ToDoForm from './ToDoForm.vue';
-import ToDoList from './ToDoList.vue';
-
-export default defineComponent({
-	name: 'ToDo',
-
-	components: {
-		ToDoForm,
-		ToDoList,
-	},
-
-	data() {
-		return {
-			tasks: [] as Task[],
-			TEXT,
-			editingTask: null as Task | null,
-		};
-	},
-
-	mounted() {
-		this.loadTasks();
-	},
-
-	watch: {
-		tasks: {
-			handler(this: any) {
-				this.saveTasks();
-			},
-			deep: true,
-		},
-	},
-
-	methods: {
-		loadTasks(): void {
-			const saved = localStorage.getItem('tasks');
-			if (saved) {
-				try {
-					this.tasks = JSON.parse(saved);
-				} catch (e) {
-					console.error('Ошибка загрузки задач:', e);
-					this.tasks = [];
-				}
-			}
-		},
-
-		saveTasks(): void {
-			localStorage.setItem('tasks', JSON.stringify(this.tasks));
-		},
-
-		addTask(payload: TaskFormData): void {
-			this.tasks.push({
-				id: this.generateId(),
-				title: payload.title,
-				text: payload.text,
-				priority: payload.priority,
-				deadline: payload.deadline || null,
-				done: false,
-				date: Date.now(),
-			});
-		},
-
-		removeTask(id: string): void {
-			this.tasks = this.tasks.filter((task) => task.id !== id);
-		},
-
-		generateId(): string {
-			return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-		},
-
-		editTask(payload: TaskFormData): void {
-			if (this.editingTask) {
-				this.tasks = this.tasks.map((task) =>
-					task.id === this.editingTask!.id
-						? {
-								...task,
-								title: payload.title,
-								text: payload.text,
-								priority: payload.priority,
-								deadline: payload.deadline || null,
-						  }
-						: task
-				);
-			}
-			this.cancelEditing();
-		},
-
-		startEditing(task: Task): void {
-			this.editingTask = { ...task };
-		},
-
-		cancelEditing(): void {
-			this.editingTask = null;
-		},
-
-		clearCompleted(): void {
-			this.tasks = this.tasks.filter((task) => !task.done);
-		},
-	},
-});
-</script>
 
 <style lang="css" module>
 .ToDo {
