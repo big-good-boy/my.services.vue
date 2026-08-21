@@ -1,49 +1,30 @@
+<script lang="ts" setup>
+import type { Service } from '~/constants/services.js';
+
+const { activeService, services } = defineProps<{
+	activeService: Service;
+	services: readonly Service[];
+}>();
+
+const emit = defineEmits<{ activeService: [number] }>();
+</script>
+
 <template>
-	<section :class="[$style.servicesList, 'container']">
-		<ul :class="$style.list" ref="list" v-if="servicesList">
+	<section class="container">
+		<ul :class="$style.list" v-if="services.length">
 			<li
 				:class="[
 					$style.item,
-					activeService?.name === item.name && $style.active,
+					activeService.name === item.name && $style.active,
 				]"
-				v-for="(item, index) in servicesList"
+				v-for="(item, index) in services"
 				:key="index"
-				@click="$emit('activeService', item)"
+				@click="emit('activeService', index)"
 				v-text="item.name"
 			/>
 		</ul>
 	</section>
 </template>
-
-<script lang="ts">
-import ToDo from '~/components/toDo/ToDo.vue';
-import ToDoForm from '../toDo/ToDoForm.vue';
-
-const servicesList = [
-	{ name: 'Список задач', component: markRaw(ToDo) },
-	{ name: "Бл'ОК", component: markRaw(ToDoForm) },
-];
-
-export default defineComponent({
-	name: 'App',
-
-	props: {
-		serviceNames: {
-			type: Array,
-			required: true,
-		},
-	},
-
-	data() {
-		return {
-			activeService: servicesList[0],
-			servicesList,
-		};
-	},
-
-	emits: ['activeService'],
-});
-</script>
 
 <style lang="css" module>
 .list {
