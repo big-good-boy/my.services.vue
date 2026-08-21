@@ -1,75 +1,40 @@
-# Nuxt Minimal Starter
+# my.services.vue
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Личный инструмент "рабочий стол разработчика" — набор небольших утилит под одной крышей, чтобы нужные вещи всегда были под рукой во время работы, без переключения между вкладками/сайтами.
 
-## Setup
+Проект также служит учебным полигоном для практики Vue 3 (Composition API + TypeScript) на реальных, а не абстрактных задачах.
 
-Make sure to install dependencies:
+## Сервисы
+
+- **Список задач** — todo-лист с приоритетами, сроками и сохранением в localStorage. Реализован.
+- **Бл'ОК** — коллекция сниппетов кода (HTML/CSS/JS) для быстрого копирования в однотипных задачах. В планах.
+
+Сервисы переключаются в едином интерфейсе — архитектура рассчитана на добавление новых модулей без переписывания существующих.
+
+## Стек
+
+Nuxt 4, Vue 3 (Composition API), TypeScript.
+
+## Запуск
+
+Установка зависимостей:
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Дев-сервер (`http://localhost:3000`):
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
+Сборка:
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+## Статус
 
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Проект в активной разработке. Изначально писался на Options API, сейчас полностью переведён на Composition API.
