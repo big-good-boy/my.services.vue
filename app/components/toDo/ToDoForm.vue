@@ -2,6 +2,10 @@
 import { TEXT } from '~/constants/toDo.js';
 import type { Task, TaskFormData } from '~/interfaces/task.interfaces.js';
 
+const { taskToEdit } = defineProps<{
+	taskToEdit: Task | null;
+}>();
+
 const emit = defineEmits<{
 	add: [payload: TaskFormData];
 	edit: [payload: TaskFormData];
@@ -15,9 +19,9 @@ const localDeadline = ref<string>('');
 const taskInput = ref<HTMLInputElement | null>(null);
 const taskTextarea = ref<HTMLTextAreaElement | null>(null);
 
-const { taskToEdit } = defineProps<{
-	taskToEdit: Task | null;
-}>();
+const isEditing = computed((): boolean => {
+	return taskToEdit !== null;
+});
 
 watch(
 	() => taskToEdit,
@@ -31,10 +35,6 @@ watch(
 	},
 	{ immediate: true }
 );
-
-const isEditing = computed((): boolean => {
-	return taskToEdit !== null;
-});
 
 onMounted(() => {
 	focusInput();

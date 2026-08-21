@@ -7,11 +7,11 @@ import ToDoList from './ToDoList.vue';
 const tasks = ref<Task[]>([]);
 const editingTask = ref<Task | null>(null);
 
+watch(tasks, () => saveTasks(), { deep: true });
+
 onMounted(() => {
 	loadTasks();
 });
-
-watch(tasks, () => saveTasks(), { deep: true });
 
 function loadTasks(): void {
 	const saved = localStorage.getItem('tasks');

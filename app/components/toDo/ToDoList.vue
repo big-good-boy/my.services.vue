@@ -3,14 +3,14 @@ import type { Task } from '~/interfaces/task.interfaces.js';
 import ToDoTask from './ToDoTask.vue';
 import { TEXT } from '~/constants/toDo.js';
 
+const { tasks } = defineProps<{
+	tasks: Task[];
+}>();
+
 const emit = defineEmits<{
 	remove: [id: string];
 	edit: [task: Task];
 	'clear-completed': [];
-}>();
-
-const { tasks } = defineProps<{
-	tasks: Task[];
 }>();
 
 const visibleCompleted = ref<boolean>(true);
@@ -20,11 +20,9 @@ const popupRef = ref<HTMLElement | null>(null);
 const numberOfActive = computed((): number => {
 	return tasks.filter((task) => !task.done).length;
 });
-
 const visibleTasks = computed((): Task[] => {
 	return !visibleCompleted.value ? tasks.filter((task) => !task.done) : tasks;
 });
-
 const hasCompletedTasks = computed((): boolean => {
 	return tasks.some((task) => task.done);
 });
