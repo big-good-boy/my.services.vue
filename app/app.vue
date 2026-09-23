@@ -10,13 +10,13 @@ function selectService(el: number): void {
 
 <template>
 	<main class="main">
-		<ServicesList
+		<!-- <ServicesList
 			:services="SERVICES"
 			:activeService
 			@activeService="selectService"
 			v-if="SERVICES.length > 1"
 		/>
-		<component :is="activeService?.component" />
-		<!-- <Snippets /> -->
+		<component :is="activeService?.component" /> -->
+		<Snippets />
 	</main>
 </template>

@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import IconCodeSlash from '~/components/icons/IconCodeSlash.vue';
 import IconPuzzle from '~/components/icons/IconPuzzle.vue';
+import IconCopy from '~/components/icons/IconCopy.vue';
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
 
 const { snippet } = defineProps<{ snippet: Snippet }>();
 const activeTab = ref<'demo' | 'code'>('code');
+const justCopied = ref<boolean>(false);
+
+async function handleCopy(): Promise<void> {
+	await navigator.clipboard.writeText(snippet.code);
+	justCopied.value = true;
+	setTimeout(() => {
+		justCopied.value = false;
+	}, 3000);
+}
 </script>
 
 <template>
@@ -30,22 +40,36 @@ const activeTab = ref<'demo' | 'code'>('code');
 		</div>
 
 		<div class="w-1/2">
-			<ol class="flex gap-2">
-				<li
-					class="cursor-pointer"
-					v-if="snippet.demo"
-					@click="activeTab = 'demo'"
-				>
-					<IconPuzzle
+			<header class="flex gap-2 justify-between">
+				<ol class="flex gap-2">
+					<li
+						v-if="snippet.demo"
 						:class="[activeTab === 'demo' ? 'text-orange' : 'text-blue']"
-					/>
-				</li>
-				<li class="cursor-pointer" @click="activeTab = 'code'">
-					<IconCodeSlash
+						class="cursor-pointer"
+						@click="activeTab = 'demo'"
+					>
+						<IconPuzzle />
+					</li>
+					<li
 						:class="[activeTab === 'code' ? 'text-orange' : 'text-blue']"
-					/>
-				</li>
-			</ol>
+						class="cursor-pointer"
+						@click="activeTab = 'code'"
+					>
+						<IconCodeSlash />
+					</li>
+				</ol>
+
+				<ul>
+					<li
+						v-if="activeTab === 'code'"
+						:class="[justCopied ? 'text-orange' : 'text-blue']"
+						class="cursor-pointer transition duration-300 hover:text-orange"
+						@click="handleCopy"
+					>
+						<IconCopy />
+					</li>
+				</ul>
+			</header>
 
 			<ol
 				class="border border-orange rounded-sm px-2 py-1 mt-2 overflow-auto scrollbar-thin scrollbar-thumb-blue max-h-80"
