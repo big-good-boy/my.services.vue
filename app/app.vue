@@ -17,5 +17,6 @@ function selectService(el: number): void {
 			v-if="SERVICES.length > 1"
 		/>
 		<component :is="activeService?.component" />
+		<!-- <Snippets /> -->
 	</main>
 </template>

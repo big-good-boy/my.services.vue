@@ -13,12 +13,13 @@ body {
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	min-height: 100vh;
 }
 .container {
 	width: 100%;
 	max-width: 1200px;
 	max-width: 600px;
-	margin: auto;
+	margin: 0 auto;
 	background-color: white;
 	padding: 16px;
 	border-radius: 8px;
