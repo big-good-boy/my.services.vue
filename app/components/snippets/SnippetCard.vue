@@ -3,10 +3,24 @@ import IconCodeSlash from '~/components/icons/IconCodeSlash.vue';
 import IconPuzzle from '~/components/icons/IconPuzzle.vue';
 import IconCopy from '~/components/icons/IconCopy.vue';
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
+import IconClose from '../icons/IconClose.vue';
 
-const { snippet } = defineProps<{ snippet: Snippet }>();
+const { snippet, activeCategory } = defineProps<{
+	snippet: Snippet;
+	activeCategory: string;
+}>();
+
+const emit = defineEmits<{
+	'select-category': [];
+	'reset-category': [];
+}>();
+
 const activeTab = ref<'demo' | 'code'>('code');
 const justCopied = ref<boolean>(false);
+
+const isActiveCategory = computed((): boolean => {
+	return snippet.category === activeCategory;
+});
 
 async function handleCopy(): Promise<void> {
 	await navigator.clipboard.writeText(snippet.code);
@@ -35,6 +49,24 @@ async function handleCopy(): Promise<void> {
 					:key="language"
 				>
 					{{ language }}
+				</li>
+			</ul>
+
+			<ul class="flex wrap gap-2 mt-2">
+				<li
+					:class="[isActiveCategory ? 'bg-orange text-white' : 'text-orange']"
+					class="px-2 pb-[2px] rounded-2xl border border-orange cursor-pointer hover:bg-orange hover:text-white transition duration-300"
+					@click="$emit('select-category')"
+				>
+					{{ snippet.category }}
+				</li>
+
+				<li
+					v-if="isActiveCategory"
+					class="pt-[1px] rounded-2xl border border-orange text-orange cursor-pointer hover:bg-orange hover:text-white transition duration-300"
+					@click="$emit('reset-category')"
+				>
+					<IconClose />
 				</li>
 			</ul>
 		</div>
