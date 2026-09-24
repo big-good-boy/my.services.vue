@@ -214,7 +214,7 @@ function handleTextareaEnter(event: KeyboardEvent): void {
 }
 .priorityLabel {
 	position: relative;
-	top: 1px;
+	top: 3px;
 	color: var(--gray);
 }
 .deadline {

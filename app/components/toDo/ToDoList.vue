@@ -158,7 +158,7 @@ function removeCompleted(): void {
 	display: flex;
 	align-items: center;
 	gap: 4px;
-	padding: 4px 0;
+	padding: 6px 0;
 	cursor: pointer;
 }
 .hiddenIcon {
