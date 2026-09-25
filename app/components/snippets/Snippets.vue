@@ -52,11 +52,11 @@ function resetCategory(): void {
 
 		<div class="flex gap-4 justify-end items-end">
 			<div
-				class="bg-blue rounded-sm p-2 flex gap-5 cursor-pointer"
+				class="bg-blue rounded-sm p-2 flex gap-5 cursor-pointer text-white"
 				@click="toggleSearch"
 			>
 				<input
-					class="text-white outline-0"
+					class="outline-0"
 					v-show="activeSearch"
 					@click.stop
 					type="search"
@@ -68,7 +68,7 @@ function resetCategory(): void {
 			</div>
 
 			<div
-				class="bg-blue rounded-sm p-2 cursor-pointer relative z-1"
+				class="bg-blue rounded-sm p-2 cursor-pointer relative z-1 text-white"
 				@click="activeMenu = !activeMenu"
 			>
 				<IconList />
