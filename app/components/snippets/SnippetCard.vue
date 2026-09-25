@@ -63,7 +63,7 @@ async function handleCopy(): Promise<void> {
 
 				<li
 					v-if="isActiveCategory"
-					class="pt-[1px] rounded-2xl border border-orange text-orange cursor-pointer hover:bg-orange hover:text-white transition duration-300"
+					class="pt-[1px] rounded-2xl border border-red text-red cursor-pointer hover:bg-red hover:text-white transition duration-300"
 					@click="$emit('reset-category')"
 				>
 					<IconClose />
@@ -76,14 +76,14 @@ async function handleCopy(): Promise<void> {
 				<ol class="flex gap-2">
 					<li
 						v-if="snippet.demo"
-						:class="[activeTab === 'demo' ? 'text-orange' : 'text-blue']"
+						:class="[activeTab === 'demo' ? 'text-red' : 'text-blue']"
 						class="cursor-pointer"
 						@click="activeTab = 'demo'"
 					>
 						<IconPuzzle />
 					</li>
 					<li
-						:class="[activeTab === 'code' ? 'text-orange' : 'text-blue']"
+						:class="[activeTab === 'code' ? 'text-red' : 'text-blue']"
 						class="cursor-pointer"
 						@click="activeTab = 'code'"
 					>
@@ -94,8 +94,8 @@ async function handleCopy(): Promise<void> {
 				<ul>
 					<li
 						v-if="activeTab === 'code'"
-						:class="[justCopied ? 'text-orange' : 'text-blue']"
-						class="cursor-pointer transition duration-300 hover:text-orange"
+						:class="[justCopied ? 'text-red' : 'text-blue']"
+						class="cursor-pointer transition duration-300 hover:text-red"
 						@click="handleCopy"
 					>
 						<IconCopy />
@@ -104,7 +104,7 @@ async function handleCopy(): Promise<void> {
 			</header>
 
 			<ol
-				class="border border-orange rounded-sm px-2 py-1 mt-2 overflow-auto scrollbar-thin scrollbar-thumb-blue max-h-80"
+				class="border border-red rounded-sm px-2 py-1 mt-2 overflow-auto scrollbar-thin scrollbar-thumb-blue max-h-80"
 			>
 				<li name="demo" v-if="activeTab === 'demo'">
 					<iframe :srcdoc="snippet.code" sandbox="allow-scripts" />
