@@ -104,7 +104,7 @@ async function handleCopy(): Promise<void> {
 			</header>
 
 			<ol
-				class="border border-red rounded-sm px-2 py-1 mt-2 overflow-auto scrollbar-thin scrollbar-thumb-blue max-h-80"
+				class="border border-red rounded-sm px-2 py-1 mt-2 overflow-auto scrollbar-thin scrollbar-thumb-blue h-80"
 			>
 				<li name="demo" v-if="activeTab === 'demo'">
 					<iframe :srcdoc="snippet.code" sandbox="allow-scripts" />
