@@ -4,11 +4,25 @@ import IconList from '~/components/icons/IconList.vue';
 import IconSearch from '~/components/icons/IconSearch.vue';
 import SnippetCard from './SnippetCard.vue';
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
+import IconPlus from '../icons/IconPlus.vue';
+import IconPencilSquare from '../icons/IconPencilSquare.vue';
+
+type SnippetForm = Omit<Snippet, 'id'>;
 
 const activeSearch = ref<boolean>(false);
 const inputSearch = useTemplateRef('inputSearch');
 const activeMenu = ref<boolean>(false);
 const activeCategory = ref<string>('');
+const activeAddSnippet = ref<boolean>(false);
+const nameInput = useTemplateRef('nameInput');
+const form = ref<SnippetForm>({
+	title: '',
+	description: '',
+	language: [],
+	category: '',
+	code: '',
+	demo: false,
+});
 
 const categories = computed((): string[] => {
 	return [...new Set(snippets.value.map((snippet) => snippet.category))].sort();
@@ -23,7 +37,15 @@ const filteredSnippets = computed((): Snippet[] => {
 	);
 });
 
-async function toggleSearch() {
+const filteredCategories = computed((): string[] => {
+	const query = form.value.category.trim().toLowerCase();
+	if (!query) return categories.value;
+	return categories.value.filter((category) =>
+		category.toLocaleLowerCase().includes(query)
+	);
+});
+
+async function toggleSearch(): Promise<void> {
 	activeSearch.value = !activeSearch.value;
 	if (activeSearch.value) {
 		await nextTick();
@@ -44,6 +66,45 @@ function resetCategory(): void {
 	activeCategory.value = '';
 	closeMenu();
 }
+
+async function openAddSnippet(): Promise<void> {
+	activeAddSnippet.value = !activeAddSnippet.value;
+	if (activeAddSnippet.value) {
+		await nextTick();
+		nameInput.value?.focus();
+	}
+}
+
+function closeAddSnippet(): void {
+	activeAddSnippet.value = false;
+}
+
+function resetAddSnippet(): void {
+	form.value = {
+		title: '',
+		description: '',
+		language: [],
+		category: '',
+		code: '',
+		demo: false,
+	};
+}
+
+function handleSubmit(): void {
+	const payload: Snippet = {
+		id: snippets.value.length
+			? Math.max(...snippets.value.map((s) => s.id)) + 1
+			: 1,
+		...form.value,
+	};
+	snippets.value.push(payload);
+	cancelAddSnippet();
+}
+
+function cancelAddSnippet(): void {
+	closeAddSnippet();
+	resetAddSnippet();
+}
 </script>
 
 <template>
@@ -52,7 +113,7 @@ function resetCategory(): void {
 
 		<div class="flex gap-4 justify-end items-end">
 			<div
-				class="bg-blue rounded-sm p-2 flex gap-5 cursor-pointer text-white"
+				class="bg-blue rounded-sm p-2 flex gap-5 cursor-pointer text-white hover:bg-orange transition duration-300"
 				@click="toggleSearch"
 			>
 				<input
@@ -68,35 +129,150 @@ function resetCategory(): void {
 			</div>
 
 			<div
-				class="bg-blue rounded-sm p-2 cursor-pointer relative z-1 text-white"
+				class="bg-blue rounded-sm p-2 cursor-pointer text-white hover:bg-orange transition duration-300"
+				@click="openAddSnippet"
+			>
+				<IconPlus />
+			</div>
+
+			<div
+				class="bg-blue rounded-sm p-2 cursor-pointer text-white hover:bg-orange transition duration-300"
+			>
+				<IconPencilSquare />
+			</div>
+
+			<div
+				class="bg-blue rounded-sm p-2 cursor-pointer relative z-1 text-white hover:bg-orange transition duration-300"
 				@click="activeMenu = !activeMenu"
 			>
 				<IconList />
 			</div>
 		</div>
+
+		<nav class="fixed top-0 right-0 w-full h-full bg-white" v-show="activeMenu">
+			<ul
+				class="max-w-7xl w-full h-full m-auto flex flex-col justify-center items-center"
+			>
+				<li
+					v-for="category in categories"
+					:key="category"
+					:class="[category === activeCategory ? 'text-orange' : 'text-blue']"
+					class="cursor-pointer"
+				>
+					<span @click="selectCategory(category)">{{ category }}</span>
+				</li>
+				<li
+					v-if="activeCategory !== ''"
+					@click="resetCategory"
+					class="cursor-pointer text-blue"
+				>
+					<span>Сбросить</span>
+				</li>
+			</ul>
+		</nav>
 	</header>
 
-	<nav class="absolute w-full h-full bg-white" v-show="activeMenu">
-		<ul
-			class="max-w-7xl w-full h-full m-auto flex flex-col justify-center items-center"
+	<form
+		v-if="activeAddSnippet"
+		class="fixed top-0 right-0 w-full h-full bg-white flex flex-col justify-center z-2"
+		@click.self="closeAddSnippet"
+		@submit.prevent="handleSubmit"
+	>
+		<div
+			class="max-w-xl w-full m-auto flex flex-col p-4 gap-2 bg-blue"
+			@keydown.esc="cancelAddSnippet"
 		>
-			<li
-				v-for="category in categories"
-				:key="category"
-				:class="[category === activeCategory ? 'text-orange' : 'text-blue']"
-				class="cursor-pointer"
+			<input
+				class="bg-white py-1 px-2 placeholder:text-black"
+				type="text"
+				name="title"
+				placeholder="Название"
+				required
+				ref="nameInput"
+				v-model="form.title"
+			/>
+
+			<textarea
+				class="bg-white py-1 px-2 resize-none placeholder:text-black"
+				rows="3"
+				name="description"
+				placeholder="Описание"
+				required
+				v-model="form.description"
+			></textarea>
+
+			<label class="bg-white py-1 px-2 flex justify-between">
+				<span>Языки</span>
+				<select
+					name="language"
+					multiple
+					size="1"
+					required
+					v-model="form.language"
+				>
+					<option value="html">html</option>
+					<option value="css">css</option>
+					<option value="scss">scss</option>
+					<option value="js">js</option>
+					<option value="ts">ts</option>
+					<option value="vue">vue</option>
+					<option value="react">react</option>
+				</select>
+			</label>
+
+			<label class="relative group">
+				<input
+					class="bg-white py-1 px-2 placeholder:text-black w-full"
+					type="text"
+					name="category"
+					placeholder="Категория"
+					required
+					v-model="form.category"
+				/>
+
+				<ul
+					class="hidden group-focus-within:flex absolute right-1 top-0 bottom-0 items-center gap-1"
+				>
+					<li
+						class="bg-green text-white px-2 cursor-pointer rounded-2xl"
+						v-for="category in filteredCategories"
+						:key="category"
+						@click="form.category = category"
+						@mousedown.prevent
+					>
+						{{ category }}
+					</li>
+				</ul>
+			</label>
+
+			<textarea
+				class="bg-white py-1 px-2 resize-none placeholder:text-black"
+				rows="7"
+				name="code"
+				placeholder="Код сниппета"
+				v-model="form.code"
+			></textarea>
+
+			<label class="bg-white py-1 px-2 flex justify-between cursor-pointer">
+				Демонстрация
+				<input type="checkbox" name="demo" v-model="form.demo" />
+			</label>
+
+			<button
+				class="bg-green text-white py-1 px-2 cursor-pointer hover:bg-green transition duration-300"
 			>
-				<span @click="selectCategory(category)">{{ category }}</span>
-			</li>
-			<li
-				v-if="activeCategory !== ''"
-				@click="resetCategory"
-				class="cursor-pointer text-blue"
+				Добавить
+			</button>
+
+			<button
+				class="bg-red text-white py-1 px-2 cursor-pointer hover:bg-red transition duration-300"
+				type="button"
+				@click="cancelAddSnippet"
 			>
-				<span>Сбросить</span>
-			</li>
-		</ul>
-	</nav>
+				Отмена
+			</button>
+		</div>
+	</form>
 
 	<section class="max-w-7xl w-full m-auto flex flex-col gap-2 grow">
 		<SnippetCard
