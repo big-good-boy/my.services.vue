@@ -172,107 +172,116 @@ function cancelAddSnippet(): void {
 		</nav>
 	</header>
 
-	<form
-		v-if="activeAddSnippet"
-		class="fixed top-0 right-0 w-full h-full bg-white flex flex-col justify-center z-2"
-		@click.self="closeAddSnippet"
-		@submit.prevent="handleSubmit"
+	<Transition
+		enter-active-class="transition-opacity duration-300"
+		enter-from-class="opacity-0"
+		enter-to-class="opacity-100"
+		leave-active-class="transition-opacity duration-300"
+		leave-from-class="opacity-100"
+		leave-to-class="opacity-0"
 	>
-		<div
-			class="max-w-xl w-full m-auto flex flex-col p-4 gap-2 bg-blue"
-			@keydown.esc="cancelAddSnippet"
+		<form
+			v-show="activeAddSnippet"
+			class="fixed top-0 right-0 w-full h-full bg-black/30 flex flex-col justify-center z-2"
+			@click.self="closeAddSnippet"
+			@submit.prevent="handleSubmit"
 		>
-			<input
-				class="bg-white py-1 px-2 placeholder:text-black"
-				type="text"
-				name="title"
-				placeholder="Название"
-				required
-				ref="nameInput"
-				v-model="form.title"
-			/>
-
-			<textarea
-				class="bg-white py-1 px-2 resize-none placeholder:text-black"
-				rows="3"
-				name="description"
-				placeholder="Описание"
-				required
-				v-model="form.description"
-			></textarea>
-
-			<label class="bg-white py-1 px-2 flex justify-between">
-				<span>Языки</span>
-				<select
-					name="language"
-					multiple
-					size="1"
-					required
-					v-model="form.language"
-				>
-					<option value="html">html</option>
-					<option value="css">css</option>
-					<option value="scss">scss</option>
-					<option value="js">js</option>
-					<option value="ts">ts</option>
-					<option value="vue">vue</option>
-					<option value="react">react</option>
-				</select>
-			</label>
-
-			<label class="relative group">
+			<div
+				class="max-w-xl w-full m-auto flex flex-col p-4 gap-2 bg-blue"
+				@keydown.esc="cancelAddSnippet"
+			>
 				<input
-					class="bg-white py-1 px-2 placeholder:text-black w-full"
+					class="bg-white py-1 px-2 placeholder:text-black"
 					type="text"
-					name="category"
-					placeholder="Категория"
+					name="title"
+					placeholder="Название"
 					required
-					v-model="form.category"
+					ref="nameInput"
+					v-model="form.title"
 				/>
 
-				<ul
-					class="hidden group-focus-within:flex absolute right-1 top-0 bottom-0 items-center gap-1"
-				>
-					<li
-						class="bg-green text-white px-2 cursor-pointer rounded-2xl"
-						v-for="category in filteredCategories"
-						:key="category"
-						@click="form.category = category"
-						@mousedown.prevent
+				<textarea
+					class="bg-white py-1 px-2 resize-none placeholder:text-black"
+					rows="3"
+					name="description"
+					placeholder="Описание"
+					required
+					v-model="form.description"
+				></textarea>
+
+				<label class="bg-white py-1 px-2 flex justify-between">
+					<span>Языки</span>
+					<select
+						name="language"
+						multiple
+						size="1"
+						required
+						v-model="form.language"
 					>
-						{{ category }}
-					</li>
-				</ul>
-			</label>
+						<option value="html">html</option>
+						<option value="css">css</option>
+						<option value="scss">scss</option>
+						<option value="js">js</option>
+						<option value="ts">ts</option>
+						<option value="vue">vue</option>
+						<option value="react">react</option>
+					</select>
+				</label>
 
-			<textarea
-				class="bg-white py-1 px-2 resize-none placeholder:text-black"
-				rows="7"
-				name="code"
-				placeholder="Код сниппета"
-				v-model="form.code"
-			></textarea>
+				<label class="relative group">
+					<input
+						class="bg-white py-1 px-2 placeholder:text-black w-full"
+						type="text"
+						name="category"
+						placeholder="Категория"
+						required
+						v-model="form.category"
+					/>
 
-			<label class="bg-white py-1 px-2 flex justify-between cursor-pointer">
-				Демонстрация
-				<input type="checkbox" name="demo" v-model="form.demo" />
-			</label>
+					<ul
+						class="hidden group-focus-within:flex absolute right-1 top-0 bottom-0 items-center gap-1"
+					>
+						<li
+							class="bg-green text-white px-2 cursor-pointer rounded-2xl"
+							v-for="category in filteredCategories"
+							:key="category"
+							@click="form.category = category"
+							@mousedown.prevent
+						>
+							{{ category }}
+						</li>
+					</ul>
+				</label>
 
-			<button
-				class="bg-green text-white py-1 px-2 cursor-pointer hover:bg-green transition duration-300"
-			>
-				Добавить
-			</button>
+				<textarea
+					class="bg-white py-1 px-2 resize-none placeholder:text-black"
+					rows="7"
+					name="code"
+					placeholder="Код сниппета"
+					v-model="form.code"
+				></textarea>
 
-			<button
-				class="bg-red text-white py-1 px-2 cursor-pointer hover:bg-red transition duration-300"
-				type="button"
-				@click="cancelAddSnippet"
-			>
-				Отмена
-			</button>
-		</div>
-	</form>
+				<label class="bg-white py-1 px-2 flex justify-between cursor-pointer">
+					Демонстрация
+					<input type="checkbox" name="demo" v-model="form.demo" />
+				</label>
+
+				<button
+					class="bg-green text-white py-1 px-2 cursor-pointer hover:bg-green transition duration-300"
+				>
+					Добавить
+				</button>
+
+				<button
+					class="bg-red text-white py-1 px-2 cursor-pointer hover:bg-red transition duration-300"
+					type="button"
+					@click="cancelAddSnippet"
+				>
+					Отмена
+				</button>
+			</div>
+		</form>
+	</Transition>
 
 	<section class="max-w-7xl w-full m-auto flex flex-col gap-2 grow">
 		<SnippetCard
