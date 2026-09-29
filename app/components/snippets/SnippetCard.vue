@@ -4,6 +4,7 @@ import IconPuzzle from '~/components/icons/IconPuzzle.vue';
 import IconCopy from '~/components/icons/IconCopy.vue';
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
 import IconClose from '../icons/IconClose.vue';
+import IconPencilSquare from '../icons/IconPencilSquare.vue';
 
 const { snippet, activeCategory } = defineProps<{
 	snippet: Snippet;
@@ -13,6 +14,7 @@ const { snippet, activeCategory } = defineProps<{
 const emit = defineEmits<{
 	'select-category': [];
 	'reset-category': [];
+	select: [snippet: Snippet];
 }>();
 
 const activeTab = ref<'demo' | 'code'>('code');
@@ -91,7 +93,14 @@ async function handleCopy(): Promise<void> {
 					</li>
 				</ol>
 
-				<ul>
+				<ul class="flex gap-2">
+					<li
+						class="text-blue cursor-pointer transition duration-300 hover:text-red"
+						@click="emit('select', snippet)"
+					>
+						<IconPencilSquare />
+					</li>
+
 					<li
 						v-if="activeTab === 'code'"
 						:class="[justCopied ? 'text-red' : 'text-blue']"

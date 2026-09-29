@@ -5,7 +5,6 @@ import IconSearch from '~/components/icons/IconSearch.vue';
 import SnippetCard from './SnippetCard.vue';
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
 import IconPlus from '../icons/IconPlus.vue';
-import IconPencilSquare from '../icons/IconPencilSquare.vue';
 
 type SnippetForm = Omit<Snippet, 'id'>;
 
@@ -23,6 +22,7 @@ const form = ref<SnippetForm>({
 	code: '',
 	demo: false,
 });
+const editingId = ref<number | null>(null);
 
 const categories = computed((): string[] => {
 	return [...new Set(snippets.value.map((snippet) => snippet.category))].sort();
@@ -91,19 +91,45 @@ function resetAddSnippet(): void {
 }
 
 function handleSubmit(): void {
-	const payload: Snippet = {
-		id: snippets.value.length
-			? Math.max(...snippets.value.map((s) => s.id)) + 1
-			: 1,
-		...form.value,
-	};
-	snippets.value.push(payload);
+	if (editingId.value !== null) {
+		snippets.value = snippets.value.map((s) =>
+			s.id === editingId.value ? { ...s, ...form.value } : s
+		);
+	} else {
+		const payload: Snippet = {
+			id: snippets.value.length
+				? Math.max(...snippets.value.map((s) => s.id)) + 1
+				: 1,
+			...form.value,
+		};
+		snippets.value.push(payload);
+	}
 	cancelAddSnippet();
 }
 
 function cancelAddSnippet(): void {
 	closeAddSnippet();
 	resetAddSnippet();
+	editingId.value = null;
+}
+
+function openEditingSnippet(snippet: Snippet): void {
+	editingId.value = snippet.id;
+	form.value = {
+		title: snippet.title,
+		description: snippet.description,
+		language: [...snippet.language],
+		category: snippet.category,
+		code: snippet.code,
+		demo: snippet.demo,
+	};
+	openAddSnippet();
+}
+
+function openAddSnippetForm(): void {
+	editingId.value = null;
+	resetAddSnippet();
+	openAddSnippet();
 }
 </script>
 
@@ -130,15 +156,9 @@ function cancelAddSnippet(): void {
 
 			<div
 				class="bg-blue rounded-sm p-2 cursor-pointer text-white hover:bg-orange transition duration-300"
-				@click="openAddSnippet"
+				@click="openAddSnippetForm"
 			>
 				<IconPlus />
-			</div>
-
-			<div
-				class="bg-blue rounded-sm p-2 cursor-pointer text-white hover:bg-orange transition duration-300"
-			>
-				<IconPencilSquare />
 			</div>
 
 			<div
@@ -269,7 +289,7 @@ function cancelAddSnippet(): void {
 				<button
 					class="bg-green text-white py-1 px-2 cursor-pointer hover:bg-green transition duration-300"
 				>
-					Добавить
+					{{ editingId ? 'Изменить' : 'Добавить' }}
 				</button>
 
 				<button
@@ -291,6 +311,7 @@ function cancelAddSnippet(): void {
 			:key="snippet.id"
 			@select-category="selectCategory(snippet.category)"
 			@reset-category="resetCategory"
+			@select="openEditingSnippet"
 		/>
 	</section>
 
