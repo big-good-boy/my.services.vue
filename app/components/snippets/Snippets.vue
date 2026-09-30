@@ -12,7 +12,7 @@ const activeSearch = ref<boolean>(false);
 const inputSearch = useTemplateRef('inputSearch');
 const activeMenu = ref<boolean>(false);
 const activeCategory = ref<string>('');
-const activeAddSnippet = ref<boolean>(false);
+const activeSnippetForm = ref<boolean>(false);
 const nameInput = useTemplateRef('nameInput');
 const form = ref<SnippetForm>({
 	title: '',
@@ -23,6 +23,7 @@ const form = ref<SnippetForm>({
 	demo: false,
 });
 const editingId = ref<number | null>(null);
+const resetForm = ref<boolean>(true);
 
 const categories = computed((): string[] => {
 	return [...new Set(snippets.value.map((snippet) => snippet.category))].sort();
@@ -67,19 +68,28 @@ function resetCategory(): void {
 	closeMenu();
 }
 
-async function openAddSnippet(): Promise<void> {
-	activeAddSnippet.value = !activeAddSnippet.value;
-	if (activeAddSnippet.value) {
+async function openSnippetForm(): Promise<void> {
+	activeSnippetForm.value = !activeSnippetForm.value;
+	if (activeSnippetForm.value) {
 		await nextTick();
 		nameInput.value?.focus();
 	}
 }
 
-function closeAddSnippet(): void {
-	activeAddSnippet.value = false;
+function openNewSnippetForm(): void {
+	if (editingId.value !== null) {
+		editingId.value = null;
+		resetSnippetForm();
+	}
+	openSnippetForm();
 }
 
-function resetAddSnippet(): void {
+function closeSnippetForm(reset: boolean = true): void {
+	resetForm.value = reset;
+	activeSnippetForm.value = false;
+}
+
+function resetSnippetForm(): void {
 	form.value = {
 		title: '',
 		description: '',
@@ -104,32 +114,27 @@ function handleSubmit(): void {
 		};
 		snippets.value.push(payload);
 	}
-	cancelAddSnippet();
-}
-
-function cancelAddSnippet(): void {
-	closeAddSnippet();
-	resetAddSnippet();
-	editingId.value = null;
+	closeSnippetForm();
 }
 
 function openEditingSnippet(snippet: Snippet): void {
+	if (editingId.value !== snippet.id) {
+		form.value = {
+			title: snippet.title,
+			description: snippet.description,
+			language: [...snippet.language],
+			category: snippet.category,
+			code: snippet.code,
+			demo: snippet.demo,
+		};
+	}
 	editingId.value = snippet.id;
-	form.value = {
-		title: snippet.title,
-		description: snippet.description,
-		language: [...snippet.language],
-		category: snippet.category,
-		code: snippet.code,
-		demo: snippet.demo,
-	};
-	openAddSnippet();
+	openSnippetForm();
 }
 
-function openAddSnippetForm(): void {
-	editingId.value = null;
-	resetAddSnippet();
-	openAddSnippet();
+function deleteSnippet(): void {
+	snippets.value = snippets.value.filter((el) => el.id !== editingId.value);
+	closeSnippetForm();
 }
 </script>
 
@@ -156,7 +161,7 @@ function openAddSnippetForm(): void {
 
 			<div
 				class="bg-blue rounded-sm p-2 cursor-pointer text-white hover:bg-orange transition duration-300"
-				@click="openAddSnippetForm"
+				@click="openNewSnippetForm"
 			>
 				<IconPlus />
 			</div>
@@ -199,16 +204,22 @@ function openAddSnippetForm(): void {
 		leave-active-class="transition-opacity duration-300"
 		leave-from-class="opacity-100"
 		leave-to-class="opacity-0"
+		@after-leave="
+			if (resetForm) {
+				editingId = null;
+				resetSnippetForm();
+			}
+		"
 	>
 		<form
-			v-show="activeAddSnippet"
+			v-show="activeSnippetForm"
 			class="fixed top-0 right-0 w-full h-full bg-black/30 flex flex-col justify-center z-2"
-			@click.self="closeAddSnippet"
+			@click.self="closeSnippetForm(false)"
 			@submit.prevent="handleSubmit"
 		>
 			<div
 				class="max-w-xl w-full m-auto flex flex-col p-4 gap-2 bg-blue"
-				@keydown.esc="cancelAddSnippet"
+				@keydown.esc="closeSnippetForm()"
 			>
 				<input
 					class="bg-white py-1 px-2 placeholder:text-black"
@@ -286,16 +297,23 @@ function openAddSnippetForm(): void {
 					<input type="checkbox" name="demo" v-model="form.demo" />
 				</label>
 
-				<button
-					class="bg-green text-white py-1 px-2 cursor-pointer hover:bg-green transition duration-300"
-				>
+				<button class="bg-green text-white py-1 px-2 cursor-pointer">
 					{{ editingId ? 'Изменить' : 'Добавить' }}
 				</button>
 
 				<button
-					class="bg-red text-white py-1 px-2 cursor-pointer hover:bg-red transition duration-300"
+					v-if="editingId"
+					class="bg-red text-white py-1 px-2 cursor-pointer"
 					type="button"
-					@click="cancelAddSnippet"
+					@click="deleteSnippet"
+				>
+					Удалить
+				</button>
+
+				<button
+					class="bg-orange text-white py-1 px-2 cursor-pointer"
+					type="button"
+					@click="closeSnippetForm()"
 				>
 					Отмена
 				</button>
