@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import { snippets } from '~/services/snippets.ts';
-import IconList from '~/components/icons/IconList.vue';
-import IconSearch from '~/components/icons/IconSearch.vue';
 import SnippetCard from './SnippetCard.vue';
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
-import IconPlus from '../icons/IconPlus.vue';
 
 type SnippetForm = Omit<Snippet, 'id'>;
 
-const activeSearch = ref<boolean>(false);
-const inputSearch = useTemplateRef('inputSearch');
-const activeMenu = ref<boolean>(false);
 const activeCategory = ref<string>('');
 const activeSnippetForm = ref<boolean>(false);
 const nameInput = useTemplateRef('nameInput');
@@ -46,26 +40,12 @@ const filteredCategories = computed((): string[] => {
 	);
 });
 
-async function toggleSearch(): Promise<void> {
-	activeSearch.value = !activeSearch.value;
-	if (activeSearch.value) {
-		await nextTick();
-		inputSearch.value?.focus();
-	}
-}
-
-function closeMenu(): void {
-	activeMenu.value = false;
-}
-
 function selectCategory(category: string): void {
 	activeCategory.value = category;
-	closeMenu();
 }
 
 function resetCategory(): void {
 	activeCategory.value = '';
-	closeMenu();
 }
 
 async function openSnippetForm(): Promise<void> {
@@ -139,63 +119,13 @@ function deleteSnippet(): void {
 </script>
 
 <template>
-	<header class="max-w-7xl w-full m-auto flex justify-between pt-5">
-		<a href="/"><img src="/logo-header.svg" alt="" /></a>
-
-		<div class="flex gap-4 justify-end items-end">
-			<div
-				class="bg-blue rounded-sm p-2 flex gap-5 cursor-pointer text-white hover:bg-orange transition duration-300"
-				@click="toggleSearch"
-			>
-				<input
-					class="outline-0"
-					v-show="activeSearch"
-					@click.stop
-					type="search"
-					name="search"
-					placeholder="Название компонента"
-					ref="inputSearch"
-				/>
-				<IconSearch />
-			</div>
-
-			<div
-				class="bg-blue rounded-sm p-2 cursor-pointer text-white hover:bg-orange transition duration-300"
-				@click="openNewSnippetForm"
-			>
-				<IconPlus />
-			</div>
-
-			<div
-				class="bg-blue rounded-sm p-2 cursor-pointer relative z-1 text-white hover:bg-orange transition duration-300"
-				@click="activeMenu = !activeMenu"
-			>
-				<IconList />
-			</div>
-		</div>
-
-		<nav class="fixed top-0 right-0 w-full h-full bg-white" v-show="activeMenu">
-			<ul
-				class="max-w-7xl w-full h-full m-auto flex flex-col justify-center items-center"
-			>
-				<li
-					v-for="category in categories"
-					:key="category"
-					:class="[category === activeCategory ? 'text-orange' : 'text-blue']"
-					class="cursor-pointer"
-				>
-					<span @click="selectCategory(category)">{{ category }}</span>
-				</li>
-				<li
-					v-if="activeCategory !== ''"
-					@click="resetCategory"
-					class="cursor-pointer text-blue"
-				>
-					<span>Сбросить</span>
-				</li>
-			</ul>
-		</nav>
-	</header>
+	<SnippetsHeader
+		:categories
+		:activeCategory
+		@open-new-snippet-form="openNewSnippetForm"
+		@select-category="selectCategory"
+		@reset-category="resetCategory"
+	/>
 
 	<Transition
 		enter-active-class="transition-opacity duration-300"
