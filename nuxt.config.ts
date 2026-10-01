@@ -5,6 +5,12 @@ export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
 	devtools: { enabled: true },
 
+	app: {
+		head: {
+			htmlAttrs: { lang: 'ru' },
+		},
+	},
+
 	css: ['~/assets/global.css', '~/assets/main.css'],
 
 	modules: ['@nuxt/icon'],
