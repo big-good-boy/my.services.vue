@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { snippets } from '~/services/snippets.ts';
-import SnippetCard from './SnippetCard.vue';
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
 
 type SnippetForm = Omit<Snippet, 'id'>;
@@ -252,7 +251,7 @@ function deleteSnippet(): void {
 	</Transition>
 
 	<section class="max-w-7xl w-full m-auto flex flex-col gap-2 grow">
-		<SnippetCard
+		<SnippetsCard
 			v-for="snippet in filteredSnippets"
 			:snippet
 			:activeCategory
