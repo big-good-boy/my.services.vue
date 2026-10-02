@@ -9,9 +9,9 @@ const { activeCategory, categories } = defineProps<{
 }>();
 
 const emit = defineEmits<{
+	'active-add-snippet': [];
 	'select-category': [category: string];
 	'reset-category': [];
-	'open-new-snippet-form': [];
 }>();
 
 const activeSearch = ref<boolean>(false);
@@ -65,7 +65,7 @@ function resetCategory(): void {
 
 			<div
 				class="bg-blue rounded-sm p-2 cursor-pointer text-white hover:bg-orange transition duration-300"
-				@click="emit('open-new-snippet-form')"
+				@click="emit('active-add-snippet')"
 			>
 				<IconPlus />
 			</div>

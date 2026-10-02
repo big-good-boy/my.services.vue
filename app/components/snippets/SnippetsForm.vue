@@ -3,38 +3,47 @@ import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
 
 type SnippetForm = Omit<Snippet, 'id'>;
 
-const { categories, form, editingId, activeSnippetForm } = defineProps<{
+const { categories, editingId, activeForm } = defineProps<{
 	categories: string[];
-	form: SnippetForm;
 	editingId: number | null;
-	activeSnippetForm: boolean;
+	activeForm: boolean;
 }>();
 
-defineEmits<{
-	'handle-submit': [];
-	'close-snippet-form': [reset?: boolean];
-	'delete-snippet': [];
-}>();
+const form = defineModel<SnippetForm>({ required: true });
+
+const inputRef = useTemplateRef('inputRef');
+
+defineExpose({
+	focus(): void {
+		inputRef.value?.focus();
+	},
+});
 
 const filteredCategories = computed((): string[] => {
-	const query = form.category.trim().toLowerCase();
+	const query = form.value.category.trim().toLowerCase();
 	if (!query) return categories;
 	return categories.filter((category) =>
 		category.toLocaleLowerCase().includes(query)
 	);
 });
+
+defineEmits<{
+	'close-form': [reset?: boolean];
+	'delete-snippet': [];
+	submit: [];
+}>();
 </script>
 
 <template>
 	<form
-		v-show="activeSnippetForm"
+		v-show="activeForm"
 		class="fixed top-0 right-0 w-full h-full bg-black/30 flex flex-col justify-center z-2"
-		@click.self="$emit('close-snippet-form', false)"
-		@submit.prevent="$emit('handle-submit')"
+		@click.self="$emit('close-form', false)"
+		@submit.prevent="$emit('submit')"
 	>
 		<div
 			class="max-w-xl w-full m-auto flex flex-col p-4 gap-2 bg-blue"
-			@keydown.esc="$emit('close-snippet-form')"
+			@keydown.esc="$emit('close-form', false)"
 		>
 			<input
 				class="bg-white py-1 px-2 placeholder:text-black"
@@ -42,7 +51,7 @@ const filteredCategories = computed((): string[] => {
 				name="title"
 				placeholder="Название"
 				required
-				ref="nameInput"
+				ref="inputRef"
 				v-model="form.title"
 			/>
 
@@ -128,7 +137,7 @@ const filteredCategories = computed((): string[] => {
 			<button
 				class="bg-orange text-white py-1 px-2 cursor-pointer"
 				type="button"
-				@click="$emit('close-snippet-form')"
+				@click="$emit('close-form')"
 			>
 				Отмена
 			</button>

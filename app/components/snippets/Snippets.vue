@@ -14,9 +14,9 @@ const form = ref<SnippetForm>({
 });
 const editingId = ref<number | null>(null);
 const activeCategory = ref<string>('');
-const resetForm = ref<boolean>(true);
-const activeSnippetForm = ref<boolean>(false);
-const nameInput = useTemplateRef('nameInput');
+const clearForm = ref<boolean>(true);
+const activeForm = ref<boolean>(false);
+const formRef = useTemplateRef('formRef');
 
 const categories = computed((): string[] => {
 	return [...new Set(snippets.value.map((snippet) => snippet.category))].sort();
@@ -39,9 +39,51 @@ function resetCategory(): void {
 	activeCategory.value = '';
 }
 
-function deleteSnippet(): void {
-	snippets.value = snippets.value.filter((el) => el.id !== editingId.value);
-	closeSnippetForm();
+async function openForm(): Promise<void> {
+	activeForm.value = !activeForm.value;
+	if (activeForm.value) {
+		await nextTick();
+		formRef.value?.focus();
+	}
+}
+
+function closeForm(reset: boolean = true): void {
+	clearForm.value = reset;
+	activeForm.value = false;
+}
+
+function resetForm(): void {
+	form.value = {
+		title: '',
+		description: '',
+		language: [],
+		category: '',
+		code: '',
+		demo: false,
+	};
+}
+
+function activeAddSnippet(): void {
+	if (editingId.value !== null) {
+		editingId.value = null;
+		resetForm();
+	}
+	openForm();
+}
+
+function editSnippet(snippet: Snippet): void {
+	if (editingId.value !== snippet.id) {
+		form.value = {
+			title: snippet.title,
+			description: snippet.description,
+			language: [...snippet.language],
+			category: snippet.category,
+			code: snippet.code,
+			demo: snippet.demo,
+		};
+	}
+	editingId.value = snippet.id;
+	openForm();
 }
 
 function handleSubmit(): void {
@@ -58,54 +100,12 @@ function handleSubmit(): void {
 		};
 		snippets.value.push(payload);
 	}
-	closeSnippetForm();
+	closeForm();
 }
 
-function openNewSnippetForm(): void {
-	if (editingId.value !== null) {
-		editingId.value = null;
-		resetSnippetForm();
-	}
-	openSnippetForm();
-}
-
-function openEditingSnippet(snippet: Snippet): void {
-	if (editingId.value !== snippet.id) {
-		form.value = {
-			title: snippet.title,
-			description: snippet.description,
-			language: [...snippet.language],
-			category: snippet.category,
-			code: snippet.code,
-			demo: snippet.demo,
-		};
-	}
-	editingId.value = snippet.id;
-	openSnippetForm();
-}
-
-function resetSnippetForm(): void {
-	form.value = {
-		title: '',
-		description: '',
-		language: [],
-		category: '',
-		code: '',
-		demo: false,
-	};
-}
-
-async function openSnippetForm(): Promise<void> {
-	activeSnippetForm.value = !activeSnippetForm.value;
-	if (activeSnippetForm.value) {
-		await nextTick();
-		nameInput.value?.focus();
-	}
-}
-
-function closeSnippetForm(reset: boolean = true): void {
-	resetForm.value = reset;
-	activeSnippetForm.value = false;
+function deleteSnippet(): void {
+	snippets.value = snippets.value.filter((el) => el.id !== editingId.value);
+	closeForm();
 }
 </script>
 
@@ -113,7 +113,7 @@ function closeSnippetForm(reset: boolean = true): void {
 	<SnippetsHeader
 		:categories
 		:activeCategory
-		@open-new-snippet-form="openNewSnippetForm"
+		@active-add-snippet="activeAddSnippet"
 		@select-category="selectCategory"
 		@reset-category="resetCategory"
 	/>
@@ -126,20 +126,21 @@ function closeSnippetForm(reset: boolean = true): void {
 		leave-from-class="opacity-100"
 		leave-to-class="opacity-0"
 		@after-leave="
-			if (resetForm) {
+			if (clearForm) {
 				editingId = null;
-				resetSnippetForm();
+				resetForm();
 			}
 		"
 	>
 		<SnippetsForm
+			ref="formRef"
+			v-model="form"
 			:categories
-			:form
 			:editingId
-			:activeSnippetForm
-			@handle-submit="handleSubmit"
-			@close-snippet-form="closeSnippetForm"
+			:activeForm="activeForm"
+			@close-form="closeForm"
 			@delete-snippet="deleteSnippet"
+			@submit="handleSubmit"
 		/>
 	</Transition>
 
@@ -151,7 +152,7 @@ function closeSnippetForm(reset: boolean = true): void {
 			:key="snippet.id"
 			@select-category="selectCategory(snippet.category)"
 			@reset-category="resetCategory"
-			@select="openEditingSnippet"
+			@edit-snippet="editSnippet"
 		/>
 	</section>
 
