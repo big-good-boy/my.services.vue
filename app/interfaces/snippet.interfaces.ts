@@ -1,4 +1,6 @@
-export type Language = 'html' | 'css' | 'scss' | 'js' | 'ts' | 'vue' | 'react';
+import type { LANGUAGES } from '~/constants/snippets';
+
+export type Language = (typeof LANGUAGES)[number];
 export interface Snippet {
 	id: number;
 	title: string;
@@ -8,3 +10,5 @@ export interface Snippet {
 	code: string;
 	demo: boolean;
 }
+
+export type SnippetForm = Omit<Snippet, 'id'>;

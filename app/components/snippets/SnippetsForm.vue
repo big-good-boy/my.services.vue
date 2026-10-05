@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
-
-type SnippetForm = Omit<Snippet, 'id'>;
+import { TEXT, LANGUAGES } from '~/constants/snippets.ts';
+import type { SnippetForm } from '~/interfaces/snippet.interfaces.ts';
 
 const { categories, editingId, activeForm } = defineProps<{
 	categories: string[];
@@ -11,13 +10,13 @@ const { categories, editingId, activeForm } = defineProps<{
 
 const form = defineModel<SnippetForm>({ required: true });
 
-const inputRef = useTemplateRef('inputRef');
+defineEmits<{
+	'close-form': [reset?: boolean];
+	'delete-snippet': [];
+	submit: [];
+}>();
 
-defineExpose({
-	focus(): void {
-		inputRef.value?.focus();
-	},
-});
+const inputRef = useTemplateRef('inputRef');
 
 const filteredCategories = computed((): string[] => {
 	const query = form.value.category.trim().toLowerCase();
@@ -27,11 +26,11 @@ const filteredCategories = computed((): string[] => {
 	);
 });
 
-defineEmits<{
-	'close-form': [reset?: boolean];
-	'delete-snippet': [];
-	submit: [];
-}>();
+defineExpose({
+	focus(): void {
+		inputRef.value?.focus();
+	},
+});
 </script>
 
 <template>
@@ -49,7 +48,7 @@ defineEmits<{
 				class="bg-white py-1 px-2 placeholder:text-black"
 				type="text"
 				name="title"
-				placeholder="Название"
+				:placeholder="TEXT.formTitle"
 				required
 				ref="inputRef"
 				v-model="form.title"
@@ -59,13 +58,13 @@ defineEmits<{
 				class="bg-white py-1 px-2 resize-none placeholder:text-black"
 				rows="3"
 				name="description"
-				placeholder="Описание"
+				:placeholder="TEXT.formDescription"
 				required
 				v-model="form.description"
 			></textarea>
 
 			<label class="bg-white py-1 px-2 flex justify-between">
-				<span>Языки</span>
+				<span>{{ TEXT.formLanguage }}</span>
 				<select
 					name="language"
 					multiple
@@ -73,13 +72,13 @@ defineEmits<{
 					required
 					v-model="form.language"
 				>
-					<option value="html">html</option>
-					<option value="css">css</option>
-					<option value="scss">scss</option>
-					<option value="js">js</option>
-					<option value="ts">ts</option>
-					<option value="vue">vue</option>
-					<option value="react">react</option>
+					<option
+						v-for="language in LANGUAGES"
+						:value="language"
+						:key="language"
+					>
+						{{ language }}
+					</option>
 				</select>
 			</label>
 
@@ -88,7 +87,7 @@ defineEmits<{
 					class="bg-white py-1 px-2 placeholder:text-black w-full"
 					type="text"
 					name="category"
-					placeholder="Категория"
+					:placeholder="TEXT.formCategory"
 					required
 					v-model="form.category"
 				/>
@@ -112,17 +111,22 @@ defineEmits<{
 				class="bg-white py-1 px-2 resize-none placeholder:text-black"
 				rows="7"
 				name="code"
-				placeholder="Код сниппета"
+				:placeholder="TEXT.formCode"
 				v-model="form.code"
 			></textarea>
 
 			<label class="bg-white py-1 px-2 flex justify-between cursor-pointer">
-				Демонстрация
-				<input type="checkbox" name="demo" v-model="form.demo" />
+				{{ TEXT.formDemo }}
+				<input
+					class="hover:cursor-pointer"
+					type="checkbox"
+					name="demo"
+					v-model="form.demo"
+				/>
 			</label>
 
 			<button class="bg-green text-white py-1 px-2 cursor-pointer">
-				{{ editingId ? 'Изменить' : 'Добавить' }}
+				{{ editingId ? TEXT.formBtnEdit : TEXT.formBtnAdd }}
 			</button>
 
 			<button
@@ -131,7 +135,7 @@ defineEmits<{
 				type="button"
 				@click="$emit('delete-snippet')"
 			>
-				Удалить
+				{{ TEXT.formBtnDel }}
 			</button>
 
 			<button
@@ -139,7 +143,7 @@ defineEmits<{
 				type="button"
 				@click="$emit('close-form')"
 			>
-				Отмена
+				{{ TEXT.formBtnCancel }}
 			</button>
 		</div>
 	</form>

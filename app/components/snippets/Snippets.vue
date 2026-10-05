@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { snippets } from '~/services/snippets.ts';
-import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
-
-type SnippetForm = Omit<Snippet, 'id'>;
+import type { Snippet, SnippetForm } from '~/interfaces/snippet.interfaces.ts';
 
 const form = ref<SnippetForm>({
 	title: '',

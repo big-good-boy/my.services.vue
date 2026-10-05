@@ -59,11 +59,13 @@ async function handleCopy(): Promise<void> {
 					:class="[
 						isActiveCategory
 							? 'bg-orange text-white hover:bg-red'
-							: 'text-orange',
+							: 'text-orange hover:bg-orange',
 					]"
-					class="px-2 pb-[2px] rounded-2xl border border-orange cursor-pointer hover:bg-orange hover:text-white transition duration-300"
+					class="px-2 pb-[2px] rounded-2xl border border-orange cursor-pointer hover:text-white transition duration-300"
 					@click="
-						!activeCategory ? $emit('select-category') : $emit('reset-category')
+						!isActiveCategory
+							? $emit('select-category')
+							: $emit('reset-category')
 					"
 				>
 					{{ snippet.category }}
