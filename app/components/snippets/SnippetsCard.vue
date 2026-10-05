@@ -2,8 +2,8 @@
 import IconCodeSlash from '~/components/icons/IconCodeSlash.vue';
 import IconPuzzle from '~/components/icons/IconPuzzle.vue';
 import IconCopy from '~/components/icons/IconCopy.vue';
-import IconClose from '~/components/icons/IconClose.vue';
 import IconPencilSquare from '~/components/icons/IconPencilSquare.vue';
+
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
 
 const { snippet, activeCategory } = defineProps<{
@@ -56,19 +56,17 @@ async function handleCopy(): Promise<void> {
 
 			<ul class="flex wrap gap-2 mt-2">
 				<li
-					:class="[isActiveCategory ? 'bg-orange text-white' : 'text-orange']"
+					:class="[
+						isActiveCategory
+							? 'bg-orange text-white hover:bg-red'
+							: 'text-orange',
+					]"
 					class="px-2 pb-[2px] rounded-2xl border border-orange cursor-pointer hover:bg-orange hover:text-white transition duration-300"
-					@click="$emit('select-category')"
+					@click="
+						!activeCategory ? $emit('select-category') : $emit('reset-category')
+					"
 				>
 					{{ snippet.category }}
-				</li>
-
-				<li
-					v-if="isActiveCategory"
-					class="pt-[1px] rounded-2xl border border-red text-red cursor-pointer hover:bg-red hover:text-white transition duration-300"
-					@click="$emit('reset-category')"
-				>
-					<IconClose />
 				</li>
 			</ul>
 		</div>
