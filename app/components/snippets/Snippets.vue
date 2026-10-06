@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { snippets } from '~/services/snippets.ts';
 import type { Snippet, SnippetForm } from '~/interfaces/snippet.interfaces.ts';
+import { DEMO_SNIPPETS } from '~/constants/snippets.ts';
 
 const form = ref<SnippetForm>({
 	title: '',
@@ -15,18 +15,35 @@ const activeCategory = ref<string>('');
 const clearForm = ref<boolean>(true);
 const activeForm = ref<boolean>(false);
 const formRef = useTemplateRef('formRef');
+const snippets = ref<Snippet[]>([]);
+
+const isPlaceholder = computed((): boolean => snippets.value.length === 0);
+
+const visibleSnippets = computed((): Snippet[] =>
+	isPlaceholder.value ? DEMO_SNIPPETS : snippets.value
+);
 
 const categories = computed((): string[] => {
-	return [...new Set(snippets.value.map((snippet) => snippet.category))].sort();
+	return [
+		...new Set(visibleSnippets.value.map((snippet) => snippet.category)),
+	].sort();
 });
 
 const filteredSnippets = computed((): Snippet[] => {
 	if (activeCategory.value === '') {
-		return snippets.value;
+		return visibleSnippets.value;
 	}
-	return snippets.value.filter(
+	return visibleSnippets.value.filter(
 		(snippet) => snippet.category === activeCategory.value
 	);
+});
+
+watch(snippets, () => saveSnippets(), { deep: true });
+
+watch(categories, (newCategories) => {
+	if (activeCategory.value && !newCategories.includes(activeCategory.value)) {
+		resetCategory();
+	}
 });
 
 function selectCategory(category: string): void {
@@ -105,6 +122,26 @@ function deleteSnippet(): void {
 	snippets.value = snippets.value.filter((el) => el.id !== editingId.value);
 	closeForm();
 }
+
+function saveSnippets(): void {
+	localStorage.setItem('snippets', JSON.stringify(snippets.value));
+}
+
+function loadSnippets(): void {
+	const saved = localStorage.getItem('snippets');
+	if (saved) {
+		try {
+			snippets.value = JSON.parse(saved);
+		} catch (error) {
+			console.error('Ошибка загрузки: ', error);
+			snippets.value = [];
+		}
+	}
+}
+
+onMounted(() => {
+	loadSnippets();
+});
 </script>
 
 <template>
@@ -148,6 +185,7 @@ function deleteSnippet(): void {
 			:snippet
 			:activeCategory
 			:key="snippet.id"
+			:editable="!isPlaceholder"
 			@select-category="selectCategory(snippet.category)"
 			@reset-category="resetCategory"
 			@edit-snippet="editSnippet"

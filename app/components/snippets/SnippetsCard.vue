@@ -6,9 +6,10 @@ import IconPencilSquare from '~/components/icons/IconPencilSquare.vue';
 
 import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
 
-const { snippet, activeCategory } = defineProps<{
+const { snippet, activeCategory, editable } = defineProps<{
 	snippet: Snippet;
 	activeCategory: string;
+	editable: boolean;
 }>();
 
 defineEmits<{
@@ -93,7 +94,7 @@ async function handleCopy(): Promise<void> {
 					</li>
 				</ol>
 
-				<ul class="flex gap-2">
+				<ul v-if="editable" class="flex gap-2">
 					<li
 						class="text-blue cursor-pointer transition duration-300 hover:text-red"
 						@click="$emit('edit-snippet', snippet)"

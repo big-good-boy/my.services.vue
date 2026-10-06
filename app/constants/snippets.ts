@@ -1,3 +1,5 @@
+import type { Snippet } from '~/interfaces/snippet.interfaces.ts';
+
 export const TEXT = {
 	formTitle: 'Название',
 	formDescription: 'Описание',
@@ -20,3 +22,15 @@ export const LANGUAGES = [
 	'vue',
 	'react',
 ] as const;
+
+export const DEMO_SNIPPETS: Snippet[] = [
+	{
+		id: 0,
+		title: 'Привет!',
+		description: 'Скорее добавь свой первый сниппет!',
+		language: [...LANGUAGES],
+		category: 'Приветствие',
+		code: 'Тут будет твой код',
+		demo: false,
+	},
+];
