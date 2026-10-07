@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { SERVICES, type Service } from '~/constants/services.js';
+import { SERVICES, type Service } from '~/constants/services.ts';
 
 const activeService = ref<Service>(SERVICES[0]);
 
@@ -13,10 +13,11 @@ function selectService(el: number): void {
 		<ServicesList
 			:services="SERVICES"
 			:activeService
-			@activeService="selectService"
+			@selectService="selectService"
 			v-if="SERVICES.length > 1"
 		/>
-		<component :is="activeService?.component" />
-		<!-- <Snippets /> -->
+		<KeepAlive>
+			<component :is="activeService?.component" />
+		</KeepAlive>
 	</main>
 </template>

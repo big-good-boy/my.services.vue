@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-import type { Service } from '~/constants/services.js';
+import type { Service } from '~/constants/services.ts';
 
 const { activeService, services } = defineProps<{
 	activeService: Service;
 	services: readonly Service[];
 }>();
 
-const emit = defineEmits<{ activeService: [number] }>();
+const emit = defineEmits<{ selectService: [number] }>();
 </script>
 
 <template>
-	<section class="container">
+	<section class="bg-white flex justify-center p-1">
 		<ul :class="$style.list" v-if="services.length">
 			<li
 				:class="[
@@ -18,8 +18,8 @@ const emit = defineEmits<{ activeService: [number] }>();
 					activeService.name === item.name && $style.active,
 				]"
 				v-for="(item, index) in services"
-				:key="index"
-				@click="emit('activeService', index)"
+				:key="item.name"
+				@click="emit('selectService', index)"
 				v-text="item.name"
 			/>
 		</ul>
