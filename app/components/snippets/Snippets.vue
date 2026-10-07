@@ -23,11 +23,13 @@ const visibleSnippets = computed((): Snippet[] =>
 	isPlaceholder.value ? DEMO_SNIPPETS : snippets.value
 );
 
-const categories = computed((): string[] => {
-	return [
-		...new Set(visibleSnippets.value.map((snippet) => snippet.category)),
-	].sort();
-});
+const categories = computed((): string[] =>
+	getUniqueCategories(visibleSnippets.value)
+);
+
+const userCategories = computed((): string[] =>
+	getUniqueCategories(snippets.value)
+);
 
 const filteredSnippets = computed((): Snippet[] => {
 	if (activeCategory.value === '') {
@@ -139,6 +141,10 @@ function loadSnippets(): void {
 	}
 }
 
+function getUniqueCategories(list: Snippet[]): string[] {
+	return [...new Set(list.map((snippet) => snippet.category))].sort();
+}
+
 onMounted(() => {
 	loadSnippets();
 });
@@ -170,7 +176,7 @@ onMounted(() => {
 		<SnippetsForm
 			ref="formRef"
 			v-model="form"
-			:categories
+			:categories="userCategories"
 			:editingId
 			:activeForm="activeForm"
 			@close-form="closeForm"
