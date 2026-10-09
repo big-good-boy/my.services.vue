@@ -80,8 +80,10 @@ function clearCompleted(): void {
 </script>
 
 <template>
-	<section :class="[$style.ToDo, 'container']">
-		<h2 :class="$style.title">
+	<section
+		class="w-full max-w-2xl mx-auto my-5 font-sans bg-white p-4 rounded-lg"
+	>
+		<h2 class="mt-0 mbe-3 text-2xl font-medium">
 			{{ TEXT.title }}
 		</h2>
 
@@ -100,12 +102,3 @@ function clearCompleted(): void {
 		/>
 	</section>
 </template>
-
-<style lang="css" module>
-.ToDo {
-	font-family: sans-serif;
-}
-.title {
-	margin-top: 0;
-}
-</style>

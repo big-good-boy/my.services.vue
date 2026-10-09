@@ -13,4 +13,8 @@ export const TEXT = {
 		many: 'задач',
 	},
 	showOnlyActiveLabel: 'Выполненные',
+	delBtn: 'Очистить',
+	delAlert: 'Удалить выполненные задачи?',
+	delYes: 'Да',
+	delNo: 'Нет',
 } as const;

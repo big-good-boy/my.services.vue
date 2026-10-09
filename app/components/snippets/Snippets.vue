@@ -151,56 +151,58 @@ onMounted(() => {
 </script>
 
 <template>
-	<SnippetsHeader
-		:categories
-		:activeCategory
-		@active-add-snippet="activeAddSnippet"
-		@select-category="selectCategory"
-		@reset-category="resetCategory"
-	/>
-
-	<Transition
-		enter-active-class="transition-opacity duration-300"
-		enter-from-class="opacity-0"
-		enter-to-class="opacity-100"
-		leave-active-class="transition-opacity duration-300"
-		leave-from-class="opacity-100"
-		leave-to-class="opacity-0"
-		@after-leave="
-			if (clearForm) {
-				editingId = null;
-				resetForm();
-			}
-		"
-	>
-		<SnippetsForm
-			ref="formRef"
-			v-model="form"
-			:categories="userCategories"
-			:editingId
-			:activeForm="activeForm"
-			@close-form="closeForm"
-			@delete-snippet="deleteSnippet"
-			@submit="handleSubmit"
-		/>
-	</Transition>
-
-	<section class="max-w-7xl w-full m-auto flex flex-col gap-2 grow">
-		<SnippetsCard
-			v-for="snippet in filteredSnippets"
-			:snippet
+	<section class="flex flex-col gap-5">
+		<SnippetsHeader
+			:categories
 			:activeCategory
-			:key="snippet.id"
-			:editable="!isPlaceholder"
-			@select-category="selectCategory(snippet.category)"
+			@active-add-snippet="activeAddSnippet"
+			@select-category="selectCategory"
 			@reset-category="resetCategory"
-			@edit-snippet="editSnippet"
 		/>
-	</section>
 
-	<footer class="bg-blue py-8">
-		<div class="max-w-7xl w-full m-auto">
-			<a href="/"><img src="/logo-footer.svg" alt="" /></a>
-		</div>
-	</footer>
+		<Transition
+			enter-active-class="transition-opacity duration-300"
+			enter-from-class="opacity-0"
+			enter-to-class="opacity-100"
+			leave-active-class="transition-opacity duration-300"
+			leave-from-class="opacity-100"
+			leave-to-class="opacity-0"
+			@after-leave="
+				if (clearForm) {
+					editingId = null;
+					resetForm();
+				}
+			"
+		>
+			<SnippetsForm
+				ref="formRef"
+				v-model="form"
+				:categories="userCategories"
+				:editingId
+				:activeForm="activeForm"
+				@close-form="closeForm"
+				@delete-snippet="deleteSnippet"
+				@submit="handleSubmit"
+			/>
+		</Transition>
+
+		<section class="max-w-7xl w-full m-auto flex flex-col gap-2 grow">
+			<SnippetsCard
+				v-for="snippet in filteredSnippets"
+				:snippet
+				:activeCategory
+				:key="snippet.id"
+				:editable="!isPlaceholder"
+				@select-category="selectCategory(snippet.category)"
+				@reset-category="resetCategory"
+				@edit-snippet="editSnippet"
+			/>
+		</section>
+
+		<footer class="bg-blue py-8">
+			<div class="max-w-7xl w-full m-auto">
+				<a href="/"><img src="/logo-footer.svg" alt="" /></a>
+			</div>
+		</footer>
+	</section>
 </template>

@@ -9,7 +9,10 @@ function selectService(el: number): void {
 </script>
 
 <template>
-	<main class="main">
+	<main
+		:class="activeService.name === 'Список задач' && 'bg-blue'"
+		class="flex flex-col min-h-[100vh]"
+	>
 		<ServicesList
 			:services="SERVICES"
 			:activeService

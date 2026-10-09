@@ -10,13 +10,11 @@ const emit = defineEmits<{ selectService: [number] }>();
 </script>
 
 <template>
-	<section class="bg-white flex justify-center p-1">
-		<ul :class="$style.list" v-if="services.length">
+	<section class="bg-white flex justify-center p-1 border-b border-b-blue">
+		<ul v-if="services.length" class="flex gap-3">
 			<li
-				:class="[
-					$style.item,
-					activeService.name === item.name && $style.active,
-				]"
+				:class="activeService.name === item.name ? 'text-red' : 'text-blue'"
+				class="cursor-pointer"
 				v-for="(item, index) in services"
 				:key="item.name"
 				@click="emit('selectService', index)"
@@ -25,18 +23,3 @@ const emit = defineEmits<{ selectService: [number] }>();
 		</ul>
 	</section>
 </template>
-
-<style lang="css" module>
-.list {
-	list-style-type: none;
-	padding-left: 0;
-	display: flex;
-	gap: 10px;
-}
-.item {
-	cursor: pointer;
-}
-.item.active {
-	color: red;
-}
-</style>

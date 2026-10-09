@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 		},
 	},
 
-	css: ['~/assets/global.css', '~/assets/main.css'],
+	css: ['~/assets/main.css'],
 
 	modules: ['@nuxt/icon'],
 

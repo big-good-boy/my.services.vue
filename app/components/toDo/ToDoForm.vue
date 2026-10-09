@@ -95,12 +95,12 @@ function handleTextareaEnter(event: KeyboardEvent): void {
 
 <template>
 	<form
-		:class="$style.form"
+		class="flex flex-col gap-4"
 		@submit.prevent="handleSubmit"
 		@keydown.esc="cancelEdit"
 	>
 		<input
-			:class="$style.input"
+			class="p-1 border border-blue rounded-sm outline-blue"
 			v-model="localTaskName"
 			type="text"
 			ref="taskInput"
@@ -109,26 +109,20 @@ function handleTextareaEnter(event: KeyboardEvent): void {
 		/>
 
 		<textarea
-			:class="$style.textarea"
+			class="resize-none h-25 p-1 border border-blue rounded-sm outline-blue"
 			ref="taskTextarea"
 			v-model="localTaskText"
 			:placeholder="TEXT.placeholderTextarea"
 			@keydown.enter="handleTextareaEnter"
 		/>
 
-		<div :class="$style.options">
-			<label :class="$style.priority">
-				<input
-					:class="$style.priorityCheckbox"
-					type="checkbox"
-					v-model="localPriority"
-				/>
+		<div class="flex justify-between gap-2">
+			<label class="flex items-end gap-1 cursor-pointer">
+				<input class="hidden" type="checkbox" v-model="localPriority" />
 
 				<div
-					:class="[
-						$style.priorityIcon,
-						localPriority && $style.priorityIconChecked,
-					]"
+					:class="localPriority ? 'text-red' : 'text-blue'"
+					class="leading-none w-5 h-5"
 				>
 					<Icon
 						:name="
@@ -140,15 +134,15 @@ function handleTextareaEnter(event: KeyboardEvent): void {
 					/>
 				</div>
 
-				<span :class="$style.priorityLabel">
+				<span class="relative top-[2px] text-gray-500">
 					{{ TEXT.priorityLabel }}
 				</span>
 			</label>
 
-			<label :class="$style.deadline">
-				<span :class="$style.deadlineLabel">Срок:</span>
+			<label class="flex items-end gap-1">
+				<span class="text-gray-500">Срок:</span>
 				<input
-					:class="$style.deadlineDatetime"
+					class="border border-blue rounded-sm text-gray-500 font-mono"
 					type="date"
 					v-model="localDeadline"
 					name=""
@@ -159,92 +153,8 @@ function handleTextareaEnter(event: KeyboardEvent): void {
 
 		<input
 			type="submit"
-			:class="$style.btn"
+			class="p-2 border border-green font-sans rounded-sm bg-green text-white cursor-pointer outline-blue transition duration-300 hover:text-green hover:bg-white"
 			:value="isEditing ? TEXT.alterBtn : TEXT.btn"
 		/>
 	</form>
 </template>
-
-<style lang="css" module>
-.form {
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-}
-.input {
-	padding: 4px;
-	border: 1px solid var(--blue);
-	font-family: sans-serif;
-	font-size: 16px;
-	border-radius: 4px;
-	outline-color: var(--blue);
-}
-.textarea {
-	resize: none;
-	height: 100px;
-	padding: 4px;
-	border: 1px solid var(--blue);
-	font-family: sans-serif;
-	font-size: 16px;
-	border-radius: 4px;
-	outline-color: var(--blue);
-}
-.options {
-	display: flex;
-	justify-content: space-between;
-	gap: 8px;
-}
-.priority {
-	display: flex;
-	align-items: flex-end;
-	gap: 4px;
-	cursor: pointer;
-}
-.priorityIcon {
-	line-height: 0;
-	color: var(--blue);
-	width: 20px;
-	height: 20px;
-}
-.priorityIconChecked {
-	color: var(--red);
-}
-.priorityCheckbox {
-	display: none;
-}
-.priorityLabel {
-	position: relative;
-	top: 3px;
-	color: var(--gray);
-}
-.deadline {
-	display: flex;
-	align-items: flex-end;
-	gap: 4px;
-}
-.deadlineLabel {
-	color: var(--gray);
-}
-.deadlineDatetime {
-	border: 1px solid var(--blue);
-	border-radius: 4px;
-	outline-color: var(--blue);
-	color: var(--gray);
-}
-.btn {
-	padding: 8px;
-	border: 1px solid var(--green);
-	font-family: sans-serif;
-	font-size: 16px;
-	border-radius: 4px;
-	background-color: var(--green);
-	color: white;
-	cursor: pointer;
-	outline-color: var(--blue);
-	transition: var(--transition);
-}
-.btn:hover {
-	color: var(--green);
-	background-color: white;
-}
-</style>

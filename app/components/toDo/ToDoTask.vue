@@ -69,48 +69,54 @@ const formatDate = (timestamp: number): string => {
 
 <template>
 	<li
-		:class="[
-			$style.item,
-			task.priority && $style.itemPriority,
-			task.done && $style.itemDone,
-		]"
+		:class="
+			task.done
+				? 'border border-gray-500'
+				: task.priority
+					? 'border-2 border-red'
+					: 'border border-blue '
+		"
+		class="relative flex gap-4 px-2 py-1 rounded-sm"
 	>
 		<input
-			:class="$style.checkbox"
+			class="hidden peer"
 			type="checkbox"
 			:id="`_${task.id}`"
 			v-model="task.done"
 		/>
 
-		<label :class="$style.text" :for="`_${task.id}`">
-			<span :class="$style.textTitle">
+		<label class="grow" :for="`_${task.id}`">
+			<span :class="task.done && 'line-through'">
 				{{ task.title }}
 			</span>
 
-			<p :class="$style.textDescription">
+			<p
+				:class="task.done && 'text-gray-500'"
+				class="whitespace-pre-wrap mbs-4 mbe-4"
+			>
 				{{ task.text }}
 			</p>
 
-			<footer :class="$style.textFooter">
+			<footer class="flex gap-2">
 				<small
 					v-if="task.deadline"
 					:class="[
-						$style.textInfo,
-						$style.textDeadline,
-						isOverdue && $style.textInfoOverdue,
+						task.done
+							? '!text-gray-500'
+							: isOverdue && 'font-semibold text-red',
 					]"
 				>
 					{{ TEXT.deadlineLabel + formatDeadline(task.deadline) }}
 				</small>
 
-				<small :class="[$style.textInfo, $style.textDate]">
+				<small :class="task.done && 'text-gray-500'">
 					{{ TEXT.dateLabel + formatDate(task.date) }}
 				</small>
 			</footer>
 		</label>
 
 		<Icon
-			:class="$style.remove"
+			class="absolute self-start top-2 right-2 cursor-pointer text-red"
 			@click="handleRemove"
 			name="material-symbols:delete-outline"
 			size="20"
@@ -118,77 +124,10 @@ const formatDate = (timestamp: number): string => {
 
 		<Icon
 			v-if="!task.done"
-			:class="$style.edit"
+			class="absolute self-start bottom-2 right-2 cursor-pointer text-blue"
 			@click="handleEdit"
 			name="material-symbols:ink-pen-outline"
 			size="20"
 		/>
 	</li>
 </template>
-
-<style lang="css" module>
-.item {
-	position: relative;
-	display: flex;
-	gap: 16px;
-	padding: 4px 8px;
-	border: 1px solid var(--blue);
-	border-radius: 4px;
-}
-.itemPriority {
-	border-width: 2px;
-	border-color: var(--red);
-}
-.itemDone {
-	border-width: 1px;
-	border-color: var(--gray);
-}
-.checkbox {
-	display: none;
-}
-.checkbox:checked + .text .textTitle {
-	text-decoration: line-through;
-}
-.checkbox:checked + .text .textDescription,
-.checkbox:checked + .text .textInfo {
-	color: var(--gray);
-}
-.text {
-	flex-grow: 1;
-}
-.textTitle {
-}
-.textDescription {
-	white-space: pre-wrap;
-}
-.textFooter {
-	display: flex;
-	gap: 8px;
-}
-.textInfo {
-}
-.textInfoOverdue {
-	font-weight: 600;
-	color: var(--red);
-}
-.textDate {
-}
-.textDeadline {
-}
-.remove {
-	position: absolute;
-	align-self: flex-start;
-	top: 8px;
-	right: 8px;
-	cursor: pointer;
-	color: var(--red);
-}
-.edit {
-	position: absolute;
-	align-self: flex-start;
-	bottom: 8px;
-	right: 8px;
-	cursor: pointer;
-	color: var(--blue);
-}
-</style>

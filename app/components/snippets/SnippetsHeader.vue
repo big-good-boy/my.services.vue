@@ -85,7 +85,7 @@ function resetCategory(): void {
 				<li
 					v-for="category in categories"
 					:key="category"
-					:class="[category === activeCategory ? 'text-orange' : 'text-blue']"
+					:class="category === activeCategory ? 'text-orange' : 'text-blue'"
 					class="cursor-pointer"
 				>
 					<span @click="selectCategory(category)">

@@ -57,11 +57,11 @@ async function handleCopy(): Promise<void> {
 
 			<ul class="flex wrap gap-2 mt-2">
 				<li
-					:class="[
+					:class="
 						isActiveCategory
 							? 'bg-orange text-white hover:bg-red'
-							: 'text-orange hover:bg-orange',
-					]"
+							: 'text-orange hover:bg-orange'
+					"
 					class="px-2 pb-[2px] rounded-2xl border border-orange cursor-pointer hover:text-white transition duration-300"
 					@click="
 						!isActiveCategory
@@ -79,14 +79,14 @@ async function handleCopy(): Promise<void> {
 				<ol class="flex gap-2">
 					<li
 						v-if="snippet.demo"
-						:class="[activeTab === 'demo' ? 'text-red' : 'text-blue']"
+						:class="activeTab === 'demo' ? 'text-red' : 'text-blue'"
 						class="cursor-pointer"
 						@click="activeTab = 'demo'"
 					>
 						<IconPuzzle />
 					</li>
 					<li
-						:class="[activeTab === 'code' ? 'text-red' : 'text-blue']"
+						:class="activeTab === 'code' ? 'text-red' : 'text-blue'"
 						class="cursor-pointer"
 						@click="activeTab = 'code'"
 					>
@@ -104,7 +104,7 @@ async function handleCopy(): Promise<void> {
 
 					<li
 						v-if="activeTab === 'code'"
-						:class="[justCopied ? 'text-red' : 'text-blue']"
+						:class="justCopied ? 'text-red' : 'text-blue'"
 						class="cursor-pointer transition duration-300 hover:text-red"
 						@click="handleCopy"
 					>

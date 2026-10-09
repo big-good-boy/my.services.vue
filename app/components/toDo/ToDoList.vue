@@ -51,27 +51,21 @@ function removeCompleted(): void {
 </script>
 
 <template>
-	<header :class="$style.info">
-		<span :class="$style.active" v-if="numberOfActive">
+	<header class="flex gap-2 mt-4">
+		<span class="flex items-center py-1 text-gray-500" v-if="numberOfActive">
 			{{ formatActive(numberOfActive) }}
 		</span>
 
-		<label :class="$style.hidden">
-			<span :class="$style.hiddenLabel">
+		<label class="flex items-center ml-auto gap-1 py-1 cursor-pointer">
+			<span class="relative top-[1px] text-gray-500">
 				{{ TEXT.showOnlyActiveLabel }}
 			</span>
 
-			<input
-				:class="$style.hiddenCheckbox"
-				type="checkbox"
-				v-model="visibleCompleted"
-			/>
+			<input class="hidden" type="checkbox" v-model="visibleCompleted" />
 
 			<div
-				:class="[
-					$style.hiddenIcon,
-					visibleCompleted && $style.hiddenIconChecked,
-				]"
+				:class="visibleCompleted ? 'text-blue' : 'text-gray-400'"
+				class="leading-none w-4 h-4"
 			>
 				<Icon
 					:name="
@@ -85,43 +79,46 @@ function removeCompleted(): void {
 		</label>
 
 		<button
-			:class="$style.clear"
+			class="py-1 px-2 border border-red font-sans rounded-sm bg-red text-white cursor-pointer transition duration-300 outline-blue hover:text-red hover:bg-white"
 			type="button"
 			@click="popupToggle"
 			v-if="hasCompletedTasks && visibleCompleted"
 		>
-			Очистить
+			{{ TEXT.delBtn }}
 		</button>
 	</header>
 
 	<div
-		:class="$style.popup"
+		class="fixed z-1 top-0 left-0 flex justify-center items-center w-full h-full bg-mist-950/50"
 		v-if="popup"
 		@click="popupToggle"
 		tabindex="0"
 		ref="popupRef"
 		@keydown.esc="popupToggle"
 	>
-		<div :class="$style.popupInner" @click.stop>
-			<div :class="$style.popupTitle">Удалить выполненные задачи?</div>
-			<div :class="$style.popupBtns">
+		<div class="bg-white rounded-sm p-4" @click.stop>
+			<div>{{ TEXT.delAlert }}</div>
+			<div class="flex gap-2 justify-center mt-2">
 				<button
-					:class="[$style.popupBtn, $style.popupBtnYes]"
+					class="rounded-sm px-4 py-2 text-white cursor-pointer transition duration-300 border border-red bg-red hover:bg-white hover:text-red"
 					@click="removeCompleted"
 				>
-					Да
+					{{ TEXT.delYes }}
 				</button>
 				<button
-					:class="[$style.popupBtn, $style.popupBtnNo]"
+					class="rounded-sm px-4 py-2 text-white cursor-pointer transition duration-300 border border-green bg-green hover:bg-white hover:text-green"
 					@click="popupToggle"
 				>
-					Нет
+					{{ TEXT.delNo }}
 				</button>
 			</div>
 		</div>
 	</div>
 
-	<ul :class="$style.list" v-if="tasks.length">
+	<ul
+		class="flex flex-col gap-4 mt-4 mb-0 border-t border-t-blue pt-4"
+		v-if="tasks.length"
+	>
 		<ToDoTask
 			v-for="task in visibleTasks"
 			:key="task.id"
@@ -131,117 +128,3 @@ function removeCompleted(): void {
 		/>
 	</ul>
 </template>
-
-<style lang="css" module>
-.list {
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-	margin-bottom: 0;
-	border-top: 1px solid var(--blue);
-	padding-top: 16px;
-	padding-left: 0;
-}
-.info {
-	display: flex;
-	gap: 8px;
-	margin-top: 16px;
-	color: var(--gray);
-}
-.active {
-	display: flex;
-	align-items: center;
-	margin-right: auto;
-	padding: 4px 0;
-}
-.hidden {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	padding: 6px 0;
-	cursor: pointer;
-}
-.hiddenIcon {
-	line-height: 0;
-	color: var(--blue);
-	width: 20px;
-	height: 20px;
-}
-.hiddenIconChecked {
-}
-.hiddenCheckbox {
-	display: none;
-}
-.hiddenLabel {
-	position: relative;
-	top: 1px;
-	color: var(--gray);
-}
-.clear {
-	padding: 4px 8px;
-	border: 1px solid var(--red);
-	font-family: sans-serif;
-	font-size: 16px;
-	border-radius: 4px;
-	background-color: var(--red);
-	color: white;
-	cursor: pointer;
-	transition: var(--transition);
-	outline-color: var(--blue);
-}
-.clear:hover {
-	color: var(--red);
-	background-color: white;
-}
-.popup {
-	z-index: 1;
-	position: fixed;
-	top: 0;
-	left: 0;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.25);
-}
-.popupInner {
-	background-color: #fff;
-	border-radius: 8px;
-	padding: 16px;
-}
-.popupTitle {
-}
-.popupBtns {
-	display: flex;
-	gap: 8px;
-	justify-content: center;
-	margin-top: 8px;
-}
-.popupBtn {
-	border-width: 1px;
-	border-style: solid;
-	border-radius: 8px;
-	padding: 8px 16px;
-	color: white;
-	cursor: pointer;
-	transition: var(--transition);
-}
-.popupBtn:hover {
-	background-color: white;
-}
-.popupBtnYes {
-	border-color: var(--red);
-	background-color: var(--red);
-}
-.popupBtnYes:hover {
-	color: var(--red);
-}
-.popupBtnNo {
-	border-color: var(--green);
-	background-color: var(--green);
-}
-.popupBtnNo:hover {
-	color: var(--green);
-}
-</style>
