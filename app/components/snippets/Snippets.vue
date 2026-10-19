@@ -151,7 +151,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<section class="flex flex-col gap-5">
+	<section class="flex flex-col gap-5 grow">
 		<SnippetsHeader
 			:categories
 			:activeCategory
@@ -200,7 +200,7 @@ onMounted(() => {
 		</section>
 
 		<footer class="bg-blue py-8">
-			<div class="max-w-7xl w-full m-auto">
+			<div class="max-w-7xl w-full m-auto flex">
 				<a href="/"><img src="/logo-footer.svg" alt="" /></a>
 			</div>
 		</footer>
