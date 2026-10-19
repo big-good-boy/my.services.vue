@@ -16,6 +16,7 @@ const emit = defineEmits<{
 
 const activeSearch = ref<boolean>(false);
 const inputSearch = useTemplateRef('inputSearch');
+const search = defineModel<string>({ required: true });
 
 const activeMenu = ref<boolean>(false);
 
@@ -48,19 +49,22 @@ function resetCategory(): void {
 
 		<div class="flex gap-4 justify-end items-end">
 			<div
-				class="bg-blue rounded-sm p-2 flex gap-5 cursor-pointer text-white hover:bg-orange transition duration-300"
+				class="bg-blue rounded-sm flex cursor-pointer text-white"
 				@click="toggleSearch"
 			>
 				<input
-					class="outline-0"
+					class="outline-0 p-2"
 					v-show="activeSearch"
 					@click.stop
 					type="search"
 					name="search"
 					placeholder="Название компонента"
 					ref="inputSearch"
+					v-model="search"
 				/>
-				<IconSearch />
+				<div class="p-2 rounded-sm hover:bg-orange transition duration-300">
+					<IconSearch />
+				</div>
 			</div>
 
 			<div

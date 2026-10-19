@@ -16,6 +16,7 @@ const clearForm = ref<boolean>(true);
 const activeForm = ref<boolean>(false);
 const formRef = useTemplateRef('formRef');
 const snippets = ref<Snippet[]>([]);
+const search = ref<string>('');
 
 const isPlaceholder = computed((): boolean => snippets.value.length === 0);
 
@@ -32,12 +33,21 @@ const userCategories = computed((): string[] =>
 );
 
 const filteredSnippets = computed((): Snippet[] => {
-	if (activeCategory.value === '') {
-		return visibleSnippets.value;
+	let result = visibleSnippets.value;
+	const query = search.value.trim().toLowerCase();
+	if (activeCategory.value) {
+		result = result.filter(
+			(snippet) => snippet.category === activeCategory.value
+		);
 	}
-	return visibleSnippets.value.filter(
-		(snippet) => snippet.category === activeCategory.value
-	);
+	if (query) {
+		result = result.filter(
+			(snippet) =>
+				snippet.title.toLowerCase().includes(query) ||
+				snippet.description.toLowerCase().includes(query)
+		);
+	}
+	return result;
 });
 
 watch(snippets, () => saveSnippets(), { deep: true });
@@ -153,11 +163,12 @@ onMounted(() => {
 <template>
 	<section class="flex flex-col gap-5 grow">
 		<SnippetsHeader
-			:categories
 			:activeCategory
+			:categories
 			@active-add-snippet="activeAddSnippet"
 			@select-category="selectCategory"
 			@reset-category="resetCategory"
+			v-model="search"
 		/>
 
 		<Transition
