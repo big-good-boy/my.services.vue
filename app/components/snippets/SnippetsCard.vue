@@ -35,8 +35,10 @@ async function handleCopy(): Promise<void> {
 </script>
 
 <template>
-	<div class="flex bg-white border border-blue rounded-sm p-5">
-		<div class="w-1/2">
+	<div
+		class="flex bg-white border border-blue rounded-sm p-4 gap-x-2 gap-y-4 max-sm:flex-col"
+	>
+		<div class="sm:w-1/2">
 			<div>
 				<strong>{{ snippet.title }}</strong>
 			</div>
@@ -45,7 +47,7 @@ async function handleCopy(): Promise<void> {
 				{{ snippet.description }}
 			</div>
 
-			<ul class="flex wrap gap-2 mt-2">
+			<ul class="flex flex-wrap gap-2 mt-2">
 				<li
 					class="bg-blue text-white px-2 pb-[2px] rounded-2xl"
 					v-for="language in snippet.language"
@@ -55,7 +57,7 @@ async function handleCopy(): Promise<void> {
 				</li>
 			</ul>
 
-			<ul class="flex wrap gap-2 mt-2">
+			<ul class="flex flex-wrap gap-2 mt-2">
 				<li
 					:class="
 						isActiveCategory
@@ -74,7 +76,7 @@ async function handleCopy(): Promise<void> {
 			</ul>
 		</div>
 
-		<div class="w-1/2">
+		<div class="sm:w-1/2">
 			<header class="flex gap-2 justify-between">
 				<ol class="flex gap-2">
 					<li
@@ -114,7 +116,7 @@ async function handleCopy(): Promise<void> {
 			</header>
 
 			<ol
-				class="border border-red rounded-sm px-2 py-1 mt-2 overflow-auto scrollbar-thin scrollbar-thumb-blue h-80"
+				class="border border-red rounded-sm px-2 py-1 mt-2 overflow-auto scrollbar-thin scrollbar-thumb-blue h-60 sm:h-80"
 			>
 				<li name="demo" v-if="activeTab === 'demo'">
 					<iframe :srcdoc="snippet.code" sandbox="allow-scripts" />

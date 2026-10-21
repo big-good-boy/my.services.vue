@@ -161,7 +161,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<section class="flex flex-col gap-5 grow">
+	<section class="flex flex-col gap-5 grow px-4">
 		<SnippetsHeader
 			:activeCategory
 			:categories
