@@ -44,7 +44,7 @@ function resetCategory(): void {
 </script>
 
 <template>
-	<header class="max-w-7xl w-full m-auto flex justify-between pt-5">
+	<header class="max-w-7xl w-full m-auto flex justify-between px-4 pt-5">
 		<a href="/"><img src="/logo-header.svg" alt="" /></a>
 
 		<div class="flex gap-4 justify-end items-end">

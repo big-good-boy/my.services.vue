@@ -161,7 +161,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<section class="flex flex-col gap-5 grow px-4">
+	<section class="flex flex-col gap-5 grow">
 		<SnippetsHeader
 			:activeCategory
 			:categories
@@ -197,7 +197,7 @@ onMounted(() => {
 			/>
 		</Transition>
 
-		<section class="max-w-7xl w-full m-auto flex flex-col gap-2 grow">
+		<section class="max-w-7xl w-full m-auto flex flex-col gap-2 grow p-4">
 			<SnippetsCard
 				v-for="snippet in filteredSnippets"
 				:snippet
@@ -211,7 +211,7 @@ onMounted(() => {
 		</section>
 
 		<footer class="bg-blue py-8">
-			<div class="max-w-7xl w-full m-auto flex">
+			<div class="max-w-7xl w-full m-auto flex px-4">
 				<a href="/"><img src="/logo-footer.svg" alt="" /></a>
 			</div>
 		</footer>
