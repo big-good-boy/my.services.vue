@@ -19,5 +19,7 @@ export default defineNuxtConfig({
 
 	routeRules: {
 		'/': { ssr: false },
+		'/todos': { prerender: true },
+		'/snippets': { prerender: true },
 	},
 });
