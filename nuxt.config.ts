@@ -16,4 +16,8 @@ export default defineNuxtConfig({
 	modules: ['@nuxt/icon'],
 
 	vite: { plugins: [tailwindcss()] },
+
+	routeRules: {
+		'/': { ssr: false },
+	},
 });

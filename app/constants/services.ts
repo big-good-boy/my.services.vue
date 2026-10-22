@@ -1,9 +1,4 @@
-import Snippets from '~/components/snippets/Snippets.vue';
-import ToDo from '~/components/toDo/ToDo.vue';
-
 export const SERVICES = [
-	{ name: 'Список задач', component: markRaw(ToDo) },
-	{ name: 'Сниппеты', component: markRaw(Snippets) },
+	{ name: 'Список задач', path: '/todos' },
+	{ name: 'Сниппеты', path: '/snippets' },
 ] as const;
-
-export type Service = (typeof SERVICES)[number];
