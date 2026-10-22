@@ -4,7 +4,7 @@ const route = useRoute();
 
 <template>
 	<main
-		:class="route.path === '/todos' && 'bg-blue'"
+		:class="route.name === 'todos' && 'bg-blue'"
 		class="flex flex-col min-h-[100vh]"
 	>
 		<ServicesList />
