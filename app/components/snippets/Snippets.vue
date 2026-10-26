@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Snippet, SnippetForm } from '~/interfaces/snippet.interfaces.ts';
 import { DEMO_SNIPPETS } from '~/constants/snippets.ts';
-
 const form = ref<SnippetForm>({
 	title: '',
 	description: '',
@@ -15,8 +14,10 @@ const activeCategory = ref<string>('');
 const clearForm = ref<boolean>(true);
 const activeForm = ref<boolean>(false);
 const formRef = useTemplateRef('formRef');
-const snippets = ref<Snippet[]>([]);
 const search = ref<string>('');
+const { data: snippets } = await useFetch<Snippet[]>('/api/snippets', {
+	default: () => [],
+});
 
 const isPlaceholder = computed((): boolean => snippets.value.length === 0);
 
@@ -49,8 +50,6 @@ const filteredSnippets = computed((): Snippet[] => {
 	}
 	return result;
 });
-
-watch(snippets, () => saveSnippets(), { deep: true });
 
 watch(categories, (newCategories) => {
 	if (activeCategory.value && !newCategories.includes(activeCategory.value)) {
@@ -113,21 +112,23 @@ function editSnippet(snippet: Snippet): void {
 	openForm();
 }
 
-function handleSubmit(): void {
-	if (editingId.value !== null) {
-		snippets.value = snippets.value.map((s) =>
-			s.id === editingId.value ? { ...s, ...form.value } : s
-		);
-	} else {
-		const payload: Snippet = {
-			id: snippets.value.length
-				? Math.max(...snippets.value.map((s) => s.id)) + 1
-				: 1,
-			...form.value,
-		};
-		snippets.value.push(payload);
+async function handleSubmit(): Promise<void> {
+	try {
+		if (editingId.value !== null) {
+			snippets.value = snippets.value.map((s) =>
+				s.id === editingId.value ? { ...s, ...form.value } : s
+			);
+		} else {
+			const payload: Snippet = await $fetch('/api/snippets', {
+				method: 'POST',
+				body: { ...form.value },
+			});
+			snippets.value = [...snippets.value, payload];
+		}
+		closeForm();
+	} catch (error) {
+		console.error('Ошибка:', error);
 	}
-	closeForm();
 }
 
 function deleteSnippet(): void {
@@ -135,29 +136,9 @@ function deleteSnippet(): void {
 	closeForm();
 }
 
-function saveSnippets(): void {
-	localStorage.setItem('snippets', JSON.stringify(snippets.value));
-}
-
-function loadSnippets(): void {
-	const saved = localStorage.getItem('snippets');
-	if (saved) {
-		try {
-			snippets.value = JSON.parse(saved);
-		} catch (error) {
-			console.error('Ошибка загрузки: ', error);
-			snippets.value = [];
-		}
-	}
-}
-
 function getUniqueCategories(list: Snippet[]): string[] {
 	return [...new Set(list.map((snippet) => snippet.category))].sort();
 }
-
-onMounted(() => {
-	loadSnippets();
-});
 </script>
 
 <template>
