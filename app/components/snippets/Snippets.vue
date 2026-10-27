@@ -115,15 +115,22 @@ function editSnippet(snippet: Snippet): void {
 async function handleSubmit(): Promise<void> {
 	try {
 		if (editingId.value !== null) {
+			const updated: Snippet = await $fetch(
+				`/api/snippets/${editingId.value}`,
+				{
+					method: 'PUT',
+					body: { ...form.value },
+				}
+			);
 			snippets.value = snippets.value.map((s) =>
-				s.id === editingId.value ? { ...s, ...form.value } : s
+				s.id === editingId.value ? updated : s
 			);
 		} else {
-			const payload: Snippet = await $fetch('/api/snippets', {
+			const created: Snippet = await $fetch('/api/snippets', {
 				method: 'POST',
 				body: { ...form.value },
 			});
-			snippets.value = [...snippets.value, payload];
+			snippets.value = [...snippets.value, created];
 		}
 		closeForm();
 	} catch (error) {
@@ -131,9 +138,16 @@ async function handleSubmit(): Promise<void> {
 	}
 }
 
-function deleteSnippet(): void {
-	snippets.value = snippets.value.filter((el) => el.id !== editingId.value);
-	closeForm();
+async function deleteSnippet(): Promise<void> {
+	try {
+		await $fetch(`/api/snippets/${editingId.value}`, {
+			method: 'DELETE',
+		});
+		snippets.value = snippets.value.filter((el) => el.id !== editingId.value);
+		closeForm();
+	} catch (error) {
+		console.error('Ошибка удаления: ', error);
+	}
 }
 
 function getUniqueCategories(list: Snippet[]): string[] {
