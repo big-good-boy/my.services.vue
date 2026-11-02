@@ -1,9 +1,23 @@
-export default defineEventHandler(async (event) => {
-	const id = Number(getRouterParam(event, 'id'));
-	const index = snippets.findIndex((snippet) => snippet.id === id);
-	const body = await readBody(event);
+import type { ResultSetHeader } from 'mysql2';
+import type { Snippet } from '~/interfaces/snippet.interfaces';
 
-	if (index === -1) {
+export default defineEventHandler(async (event) => {
+	const body = await readBody(event);
+	const id = Number(getRouterParam(event, 'id'));
+	const [result] = await db.query<ResultSetHeader>(
+		'UPDATE snippets SET title = ?, description = ?, language = ?, category = ?, code = ?, demo = ? WHERE id = ?',
+		[
+			body.title,
+			body.description,
+			JSON.stringify(body.language),
+			body.category,
+			body.code,
+			body.demo,
+			id,
+		]
+	);
+
+	if (result.affectedRows === 0) {
 		throw createError({
 			statusCode: 404,
 			statusMessage: 'Not Found',
@@ -11,11 +25,14 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	const newData = {
-		...snippets[index],
-		...body,
+	const updated: Snippet = {
+		title: body.title,
+		description: body.description,
+		language: body.language,
+		category: body.category,
+		code: body.code,
+		demo: body.demo,
 		id,
 	};
-	snippets[index] = newData;
-	return newData;
+	return updated;
 });
