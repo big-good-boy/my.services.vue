@@ -22,4 +22,14 @@ export default defineNuxtConfig({
 		'/todos': { prerender: true },
 		'/snippets': { prerender: true },
 	},
+
+	runtimeConfig: {
+		db: {
+			host: '',
+			port: 3306,
+			user: '',
+			password: '',
+			name: '',
+		},
+	},
 });
