@@ -3,6 +3,7 @@ import type { Task } from '~/interfaces/task.interfaces.js';
 import { TEXT } from '~/constants/toDo.js';
 import IconTrash from '../icons/IconTrash.vue';
 import IconPen from '../icons/IconPen.vue';
+import IconPencilSquare from '../icons/IconPencilSquare.vue';
 
 const { task } = defineProps<{
 	task: Task;
@@ -80,52 +81,51 @@ const formatDate = (timestamp: number): string => {
 		"
 		class="relative flex gap-4 px-2 py-1 rounded-sm"
 	>
-		<input
-			class="hidden peer"
-			type="checkbox"
-			:id="`_${task.id}`"
-			v-model="task.done"
-		/>
+		<div class="flex grow">
+			<div class="grow">
+				<span :class="task.done && 'line-through'">
+					{{ task.title }}
+				</span>
 
-		<label class="grow" :for="`_${task.id}`">
-			<span :class="task.done && 'line-through'">
-				{{ task.title }}
-			</span>
-
-			<p
-				:class="task.done && 'text-gray-500'"
-				class="whitespace-pre-wrap mbs-4 mbe-4"
-			>
-				{{ task.text }}
-			</p>
-
-			<footer class="flex gap-2">
-				<small
-					v-if="task.deadline"
-					:class="[
-						task.done
-							? '!text-gray-500'
-							: isOverdue && 'font-semibold text-red',
-					]"
+				<p
+					:class="task.done && 'text-gray-500'"
+					class="whitespace-pre-wrap mbs-4 mbe-4"
 				>
-					{{ TEXT.deadlineLabel + formatDeadline(task.deadline) }}
-				</small>
+					{{ task.text }}
+				</p>
 
-				<small :class="task.done && 'text-gray-500'">
-					{{ TEXT.dateLabel + formatDate(task.date) }}
-				</small>
-			</footer>
-		</label>
+				<footer class="flex gap-2">
+					<small
+						v-if="task.deadline"
+						:class="[
+							task.done
+								? '!text-gray-500'
+								: isOverdue && 'font-semibold text-red',
+						]"
+					>
+						{{ TEXT.deadlineLabel + formatDeadline(task.deadline) }}
+					</small>
 
-		<IconTrash
-			class="absolute self-start top-2 right-2 cursor-pointer text-red"
-			@click="handleRemove"
-		/>
+					<small :class="task.done && 'text-gray-500'">
+						{{ TEXT.dateLabel + formatDate(task.date) }}
+					</small>
+				</footer>
+			</div>
 
-		<IconPen
-			v-if="!task.done"
-			class="absolute self-start bottom-2 right-2 cursor-pointer text-blue"
-			@click="handleEdit"
-		/>
+			<div class="flex flex-col justify-between">
+				<IconTrash class="cursor-pointer text-red" @click="handleRemove" />
+
+				<IconPencilSquare
+					:class="task.done ? 'text-gray-500' : 'text-green'"
+					class="w-4 h-4 cursor-pointer"
+					@click="task.done = !task.done"
+				/>
+
+				<IconPen
+					:class="task.done ? 'text-gray-500' : 'text-blue cursor-pointer'"
+					@click="!task.done && handleEdit()"
+				/>
+			</div>
+		</div>
 	</li>
 </template>
