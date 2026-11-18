@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { Task } from '~/interfaces/task.interfaces.js';
 import { TEXT } from '~/constants/toDo.js';
+import IconTrash from '../icons/IconTrash.vue';
+import IconPen from '../icons/IconPen.vue';
 
 const { task } = defineProps<{
 	task: Task;
@@ -115,19 +117,15 @@ const formatDate = (timestamp: number): string => {
 			</footer>
 		</label>
 
-		<Icon
+		<IconTrash
 			class="absolute self-start top-2 right-2 cursor-pointer text-red"
 			@click="handleRemove"
-			name="material-symbols:delete-outline"
-			size="20"
 		/>
 
-		<Icon
+		<IconPen
 			v-if="!task.done"
 			class="absolute self-start bottom-2 right-2 cursor-pointer text-blue"
 			@click="handleEdit"
-			name="material-symbols:ink-pen-outline"
-			size="20"
 		/>
 	</li>
 </template>

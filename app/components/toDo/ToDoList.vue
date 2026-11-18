@@ -2,6 +2,7 @@
 import type { Task } from '~/interfaces/task.interfaces.js';
 import ToDoTask from './ToDoTask.vue';
 import { TEXT } from '~/constants/toDo.js';
+import IconCheck from '../icons/IconCheck.vue';
 
 const { tasks } = defineProps<{
 	tasks: Task[];
@@ -57,24 +58,19 @@ function removeCompleted(): void {
 		</span>
 
 		<label class="flex items-center ml-auto gap-1 py-1 cursor-pointer">
-			<span class="relative top-[1px] text-gray-500">
+			<span class="relative top-[1px] text-blue">
 				{{ TEXT.showOnlyActiveLabel }}
 			</span>
 
 			<input class="hidden" type="checkbox" v-model="visibleCompleted" />
 
 			<div
-				:class="visibleCompleted ? 'text-blue' : 'text-gray-400'"
-				class="leading-none w-4 h-4"
+				:class="
+					visibleCompleted ? 'text-red border-red' : 'text-gray-400 border-blue'
+				"
+				class="leading-none w-4 h-4 border rounded-sm flex items-center relative top-[2px]"
 			>
-				<Icon
-					:name="
-						visibleCompleted
-							? 'cuida:checkbox-checked-outlined'
-							: 'cuida:checkbox-unchecked-outlined'
-					"
-					size="20"
-				/>
+				<IconCheck v-if="visibleCompleted" />
 			</div>
 		</label>
 

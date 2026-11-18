@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { TEXT } from '~/constants/toDo.js';
 import type { Task, TaskFormData } from '~/interfaces/task.interfaces.js';
+import IconCheck from '../icons/IconCheck.vue';
 
 const { taskToEdit } = defineProps<{
 	taskToEdit: Task | null;
@@ -106,6 +107,7 @@ function handleTextareaEnter(event: KeyboardEvent): void {
 			ref="taskInput"
 			:placeholder="TEXT.placeholderInput"
 			@keydown.enter.prevent="handleInputEnter"
+			name="task"
 		/>
 
 		<textarea
@@ -114,27 +116,21 @@ function handleTextareaEnter(event: KeyboardEvent): void {
 			v-model="localTaskText"
 			:placeholder="TEXT.placeholderTextarea"
 			@keydown.enter="handleTextareaEnter"
+			name="description"
 		/>
 
 		<div class="flex justify-between gap-2">
-			<label class="flex items-end gap-1 cursor-pointer">
+			<label class="flex gap-1 cursor-pointer items-center">
 				<input class="hidden" type="checkbox" v-model="localPriority" />
 
 				<div
 					:class="localPriority ? 'text-red' : 'text-blue'"
-					class="leading-none w-5 h-5"
+					class="leading-none w-4 h-4 border rounded-sm flex items-center relative top-[2px]"
 				>
-					<Icon
-						:name="
-							localPriority
-								? 'cuida:checkbox-checked-outlined'
-								: 'cuida:checkbox-unchecked-outlined'
-						"
-						size="20"
-					/>
+					<IconCheck v-if="localPriority" />
 				</div>
 
-				<span class="relative top-[2px] text-gray-500">
+				<span class="relative top-[2px] text-blue">
 					{{ TEXT.priorityLabel }}
 				</span>
 			</label>
